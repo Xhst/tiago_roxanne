@@ -1,0 +1,5 @@
+Tiago Trajectory Controllers http://wiki.ros.org/Robots/TIAGo/Tutorials/trajectory_controller
+Ros Time http://wiki.ros.org/rospy/Overview/Time
+RosLaunch API http://wiki.ros.org/roslaunch/API%20Usage
+Twist msg http://docs.ros.org/en/melodic/api/geometry_msgs/html/msg/Twist.html
+JointTrajectory msg http://docs.ros.org/en/noetic/api/trajectory_msgs/html/msg/JointTrajectory.html
