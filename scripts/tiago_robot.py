@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 import rospy
 from roslaunch.core import Node
-from roslaunch.scriptapi import ROSLaunch
-from tiago_hrc_buttons.srv import permission
+from roslaunch.scriptapi import ROSLaunch, RLException
 
 class TiagoRobot:
     
@@ -12,11 +11,12 @@ class TiagoRobot:
 
         # 'pkg' and 'name' are required
         self.nodes = [
-            {'pkg':'tiago_hrc_buttons', 'name':'head_controller', 'namespace':'controllers'},
-            {'pkg':'tiago_hrc_buttons', 'name':'base_controller', 'namespace':'controllers'},
-            {'pkg':'tiago_hrc_buttons', 'name':'torso_controller', 'namespace':'controllers'},
-            #{'pkg':'tiago_hrc_buttons', 'name':'tts_controller', 'namespace':'controllers'},
-            #{'pkg':'tiago_hrc_buttons', 'name':'prova', 'args':'test args', 'sleep':2}
+            {'pkg':'tiago_hrc', 'name':'head_controller', 'namespace':'controllers'},
+            {'pkg':'tiago_hrc', 'name':'base_controller', 'namespace':'controllers'},
+            {'pkg':'tiago_hrc', 'name':'torso_controller', 'namespace':'controllers'},
+            {'pkg':'tiago_hrc', 'name':'tts_controller', 'namespace':'controllers'},
+            {'pkg':'tiago_hrc', 'name':'play_motion_controller', 'namespace':'controllers', 'sleep':15},
+            {'pkg':'tiago_hrc', 'name':'grasp_controller', 'namespace':'controllers'},
         ]
 
 
@@ -49,26 +49,11 @@ class TiagoRobot:
         '''
         Launch all the roslaunch nodes instances
         '''
-        #rospy.loginfo('Waiting for "permission" service.')
-        #rospy.wait_for_service('permission')
-        #rospy.loginfo('Service "permission" reached.')
-
-        #permission_service = rospy.ServiceProxy('permission', permission)
-
         for node in self.nodes:
             try:
                 pkg = node['pkg']
                 name = node['name']
                 namespace = node.get('namespace', '/')
-
-                # path with workspace as root
-                #path = './src/%s/scripts/%s/%s.py' % (pkg, namespace, name)
-
-                # sets node's file as executable
-                #permission_response = permission_service(path)
-
-                #if not permission_response.success:
-                #    rospy.logwarn('Error while setting permission for node %s in package %s', name, pkg)
 
                 self.launch_node(
                     pkg, 
@@ -82,8 +67,8 @@ class TiagoRobot:
 
             except KeyError as e:
                 rospy.logerr('"pkg" and "name" are required to identify the node to launch: %s', e)
-            except rospy.ServiceException as e:
-                rospy.logerr('Unable to set permission for node: %s', e)
+            except RLException as e:
+                rospy.logerr('Error while launching node: %s', e)
 
 
     def start(self):

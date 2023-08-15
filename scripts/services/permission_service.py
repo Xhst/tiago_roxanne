@@ -2,7 +2,7 @@
 import os
 import stat
 import rospy
-from tiago_hrc_buttons.srv import permission, permissionResponse
+from tiago_hrc.srv import permission, permissionResponse
 
 def callback(request):
     '''Make the request path executable (chmod +x)'''
@@ -20,7 +20,7 @@ def callback(request):
 def start():
     rospy.init_node('permission_service')
     rospy.Service("permission", permission, callback)
-    rospy.loginfo('Service "permission" started')
+    rospy.loginfo('Service "permission_service" started')
     rospy.spin()
 
 

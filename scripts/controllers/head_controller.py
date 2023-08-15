@@ -10,6 +10,18 @@ class TiagoHeadController:
         self.publisher = None
 
 
+    def move_to(self, horizontal_position, vertical_position, duration):
+        joint_trajectory = JointTrajectory()
+        joint_trajectory.joint_names = ['head_1_joint', 'head_2_joint']
+
+        point = JointTrajectoryPoint()
+        point.positions = [horizontal_position, vertical_position]
+        point.time_from_start = rospy.Duration.from_sec(duration)
+
+        joint_trajectory.points.append(point)
+        self.publisher.publish(joint_trajectory)
+
+
     def callback(self, message):
         data = message.data
 
@@ -27,19 +39,7 @@ class TiagoHeadController:
         rospy.loginfo('Node %s started', self.node_name)
         self.publisher = rospy.Publisher('/head_controller/command', JointTrajectory, queue_size=3)
         rospy.Subscriber('head_cmd', String, self.callback)
-        rospy.spin()
-
-
-    def move_to(self, horizontal_position, vertical_position, duration):
-        joint_trajectory = JointTrajectory()
-        joint_trajectory.joint_names = ['head_1_joint', 'head_2_joint']
-
-        point = JointTrajectoryPoint()
-        point.positions = [horizontal_position, vertical_position]
-        point.time_from_start = rospy.Duration(duration)
-
-        joint_trajectory.points.append(point)
-        self.publisher.publish(joint_trajectory)    
+        rospy.spin()    
         
 
 if __name__ == '__main__':

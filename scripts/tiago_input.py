@@ -1,15 +1,17 @@
 #!/usr/bin/env python
 import rospy
+import json
+from utils.terminal import AnsiColor as C, err, warn, info
 from std_msgs.msg import String
 
 class TiagoInput:
 
     class CommandData:
-        def __init__(self, name, args = '', desc = '', pub = None):
+        def __init__(self, name, args = '', desc = '', pub = ''):
             self.name = name
             self.arguments = args
             self.description = desc
-            self.publisher = pub
+            self.publisher_name = pub
 
 
     def __init__(self):
@@ -18,68 +20,103 @@ class TiagoInput:
         
         self.publisher_suffix = '_cmd'
 
-        # dictionary key must be equal to command name
-        self.commands = {
-            'base' : self.CommandData('base', '<linear> <angular> <duration>',
-                                      ('Move or rotate the base of the robot.\n\n'
-                                       '<linear>   (float): move ahead (positive values) or backwards (negative values) the robot.\n'
-                                       '<angular>  (float): rotate the robot (clockwise positive)\n'
-                                       '<duration> (float): duration in seconds.')),
-            'head' : self.CommandData('head', '<horizontal> <vertical> <duration>',
-                                      ('<horizontal> (float): move head horizontally (values between -1 and 1)'
-                                       '<vertical>   (float): move head vertically (values between -1 and 1)'
-                                       '<duration>   (int): duration in seconds')),
-            'torso': self.CommandData('torso', '<position> <duration>')
-        }
+        # path with workspace as root
+        self.commands_json_path = './src/tiago_hrc/config/commands.json'
+
+        self.publishers_name = ['head', 'base', 'torso', 'play_motion', 'tts', 'grasp']
+        self.publishers = {}
+        self.commands = {}
+
+
+    def start_publishers(self):
+        for name in self.publishers_name:
+            self.publishers[name] = rospy.Publisher(name + self.publisher_suffix, String, queue_size=3)
+
+
+    def load_commands(self):
+        file = open(self.commands_json_path)
+        data = json.load(file)
+
+        for command in data['commands']:
+            try:
+                name = command['name']
+            except:
+                err('[JSON_ERROR]: command requires "name".')
+                continue
+
+            args = ''
+            desc = command.get('desc', '') + '\n\n'
+
+            try:
+                for arg in command.get('args'):
+                    args += '<' + arg['name'] + '> '
+                    desc += C.BLUE + '<' + arg['name'] + '> ' + C.WHITE + '(' + arg['type'] +'): ' + C.LIGHT_GRAY + arg.get('desc', '') + '\n'
+            except:
+                err('[JSON_ERROR]: Command named "'+ name + '" has arguments with "name" or "type" missing.')
+                
+            desc += C.END
+
+            # use the publisher data or the command name if the publisher is missing 
+            publisher_name = command.get('publisher', command['name'])
+            self.commands[name] = self.CommandData(name, args, desc, publisher_name)
+
+        file.close()
 
 
     def parse_command(self, input_str):
-        parsed = input_str.split(' ', 1)
-
-        command = parsed[0]
-
         try:
-            args = parsed[1]
-        except IndexError:
-            args = ''
+            parsed = input_str.split(' ', 1)
 
-        if command == 'help':
-            # print available commands
-            if args == '': 
-                output = 'Available commands are: help <command> | '
-                for command in self.commands.values():
-                    output += command.name + ' ' + command.arguments + ' | '
-                print(output)
-            # print the description of the given command (help <command>)
-            else:
-                try:
-                    print('Description of command "'+ args +'"')
-                    print(self.commands[args].description)
-                except:
-                    print('Command "'+ args +'" not found.')
-            return
+            command = parsed[0]
 
-        self.commands[command].publisher.publish(args)
+            try:
+                args = parsed[1]
+            except IndexError:
+                args = ''
+
+            if command == 'help':
+                # print available commands
+                if args == '': 
+                    output = 'Available commands are:\n# ' + C.MAGENTA + 'help ' + C.LIGHT_GRAY + '<command>' + C.END + '\n'
+                    for command in self.commands.values():
+                        output += '# ' + C.MAGENTA + command.name + ' ' + C.LIGHT_GRAY + command.arguments + C.END + '\n'
+                    print(output)
+                # print the description of the given command (help <command>)
+                else:
+                    try:
+                        print('Description of command "'+ C.MAGENTA + args + C.END +'"\n')
+                        print(self.commands[args].description)
+                    except:
+                        warn('Command "'+ args +'" not found.')
+                return
+            
+            commandData = self.commands[command]
+
+            extra_cmd_arg = ''
+            if (commandData.publisher_name != commandData.name):
+                extra_cmd_arg = command + ' '
+
+            self.publishers[commandData.publisher_name].publish(extra_cmd_arg + args)
+        except:
+            warn('Invalid command.')
 
     
     def start(self):
         rospy.init_node(self.node_name, anonymous=False, log_level=self.log_level)
         rospy.loginfo('Starting Tiago input node.')
 
-        for command in self.commands.values():
-            command.publisher = rospy.Publisher(command.name + self.publisher_suffix, String, queue_size=3)
+        self.start_publishers()
+        self.load_commands()
 
         rospy.loginfo('Tiago input node started.')
-        print('Write "help" for commands list.')
+        info('Write "help" for commands list.')
 
         input_str = ''
 
         while not rospy.is_shutdown():
             input_str = raw_input()
-            try:
-                self.parse_command(input_str)
-            except:
-                print("Invalid command.")
+            self.parse_command(input_str)
+            
 
 
 if __name__ == '__main__':

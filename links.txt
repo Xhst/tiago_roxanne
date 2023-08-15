@@ -1,5 +1,16 @@
+https://docs.pal-robotics.com/tiago-single/handbook.html#handbook-single
+
+http://wiki.ros.org/Robots/TIAGo/Tutorials
+
 Tiago Trajectory Controllers http://wiki.ros.org/Robots/TIAGo/Tutorials/trajectory_controller
 Ros Time http://wiki.ros.org/rospy/Overview/Time
 RosLaunch API http://wiki.ros.org/roslaunch/API%20Usage
 Twist msg http://docs.ros.org/en/melodic/api/geometry_msgs/html/msg/Twist.html
 JointTrajectory msg http://docs.ros.org/en/noetic/api/trajectory_msgs/html/msg/JointTrajectory.html
+Pose msg http://docs.ros.org/en/noetic/api/geometry_msgs/html/msg/Pose.html
+PoseStamped http://docs.ros.org/en/noetic/api/geometry_msgs/html/msg/PoseStamped.html
+quaternion_from_euler https://docs.ros.org/en/kinetic/api/tf/html/python/transformations.html#tf.transformations.quaternion_from_euler
+
+XML https://docs.python.org/3/library/xml.etree.elementtree.html
+
+sound_play https://github.com/ros-drivers/audio_common/tree/master

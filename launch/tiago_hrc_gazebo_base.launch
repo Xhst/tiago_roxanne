@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<launch>
+  <arg name="world"  default="prova"/> 
+  <arg name="robot"  default="titanium"/>
+  <arg name="arm"  default="$(eval {'iron': False}.get(arg('robot'), True))"/>
+  <arg name="end_effector"  default="$(eval {'iron': 'false', 'steel': 'pal-gripper', 'titanium': 'pal-hey5'}.get(arg('robot'), 'pal-gripper'))"/>
+  <arg name="ft_sensor"  default="$(eval {'titanium': 'schunk-ft'}.get(arg('robot'), 'false'))"/>
+  <arg name="laser_model"  default="sick-571"/>
+  <arg name="camera_model"  default="orbbec-astra"/>
+
+  <arg name="gui" default="true"/>
+  <arg name="debug" default="false"/>
+  <arg name="public_sim" default="true"/>
+  <arg name="tuck_arm" default="true"/>
+  <arg name="recording" default="false"/>
+  <arg name="use_moveit_camera" default="false"/>
+  <arg name="use_dynamic_footprint" default="false"/>
+  <arg name="base_type" default="pmb2"/>
+
+  <arg name="planner"        default="base"/>
+  <arg name="global_planner" default="global_planner"/>
+  <arg name="local_planner"  default="$(eval 'teb' if (arg('public_sim') or arg('base_type')=='omni_base') else 'pal')"/>
+  <arg name="localization"   default="amcl"/>
+  <arg name="map"            default="$(find tiago_hrc)/config/navigation/maps/$(arg world)"/>
+
+  <arg name="advanced_grasping"     default="false"/> <!-- Requires extra software from PAL Robotics -->
+  <arg name="advanced_navigation"   default="false"/> <!-- Requires extra software from PAL Robotics-->
+
+  <env name="LC_NUMERIC" value="C" />
+  <env name="PAL_HOST" value="tiago" />
+  
+  <include file="$(find tiago_hrc)/launch/tiago_gazebo.launch">
+    <arg name="world"                   value="$(arg world)"/>
+    <arg name="gui"                     value="$(arg gui)"/>
+    <arg name="debug"                   value="$(arg debug)"/>
+    <arg name="recording"               value="$(arg recording)"/>
+    <arg name="arm"                     value="$(arg arm)"/>
+    <arg name="end_effector"            value="$(arg end_effector)"/>
+    <arg name="ft_sensor"               value="$(arg ft_sensor)"/>
+    <arg name="laser_model"             value="$(arg laser_model)"/>
+    <arg name="camera_model"            value="$(arg camera_model)"/>
+    <arg name="base_type"               value="$(arg base_type)"/>
+    <arg name="public_sim"              value="$(arg public_sim)"/>
+    <arg name="use_moveit_camera"       value="$(arg use_moveit_camera)"/>
+    <arg name="use_dynamic_footprint"   value="$(arg use_dynamic_footprint)"/>
+    <arg name="advanced_grasping"       value="$(arg advanced_grasping)" unless="$(arg public_sim)"/>
+  </include>
+
+  <!-- navigation -->
+  <include file="$(find tiago_2dnav_gazebo)/launch/navigation.launch">
+    <arg name="state"          value="localization"/>
+    <arg name="planner"        value="$(arg planner)"/>
+    <arg name="global_planner" value="$(arg global_planner)"/>
+    <arg name="local_planner"  value="$(arg local_planner)"/>
+    <arg name="localization"   value="$(arg localization)"/>
+    <arg name="map"            value="$(arg map)"/>
+    <arg name="public_sim"     value="$(arg public_sim)"/>
+    <arg name="rgbd_sensors"   value="$(arg advanced_navigation)"/>
+    <arg name="laser_model"    value="$(arg laser_model)"/>
+    <arg name="base_type"      value="$(arg base_type)"/>
+  </include>
+
+  <!-- text to speech -->
+  <node pkg="sound_play" name="sound_play_node" type="soundplay_node.py" />
+  <node pkg="tts" name="tts_to_soundplay" type="tts_to_soundplay.py" />
+
+  <!-- tiago hrc -->
+  <arg name="use_model_pose_service" default="true"/>
+  <arg name="rviz" default="false"/>
+
+  <param name="use_model_pose_service" value="$(arg use_model_pose_service)" />
+  <rosparam command="load" file="$(find tiago_hrc)/config/pick_and_place_params.yaml" />
+  <rosparam command="load" file="$(find tiago_hrc)/config/pick_motions.yaml" />
+  <rosparam command="load" file="$(find tiago_hrc)/config/pregrasp_motion.yaml" />
+  <rosparam command="load" file="$(find tiago_hrc)/config/tts_params.yaml" />
+
+  <group if="$(arg rviz)">
+      <node name="pick_demo_rviz" pkg="rviz" type="rviz" args="-d $(find tiago_hrc)/config/rviz/tiago_pick_demo.rviz" />
+  </group>
+
+  <node pkg="tiago_hrc" name="model_pose_service" type="model_pose_service.py" args="$(find tiago_hrc)/worlds/$(arg world).world"/>
+
+  <!--<node pkg="tiago_hrc" name="tiago_robot" type="tiago_robot.py" />-->
+  <node pkg="tiago_hrc" name="tiago_robot" type="tiago_robot.py"/>
+  <node pkg="tiago_hrc" name="base_controller" type="base_controller.py"/>
+  <node pkg="tiago_hrc" name="head_controller" type="head_controller.py"/>
+  <node pkg="tiago_hrc" name="torso_controller" type="torso_controller.py"/>
+  <node pkg="tiago_hrc" name="tts_controller" type="tts_controller.py"/>
+  <node pkg="tiago_hrc" name="play_motion_controller" type="play_motion_controller.py"/>
+  <node pkg="tiago_hrc" name="grasp_controller" type="grasp_controller.py"/>
+
+</launch>

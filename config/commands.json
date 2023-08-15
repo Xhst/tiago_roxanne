@@ -1,0 +1,123 @@
+{
+    "commands": [
+        {
+            "name" : "base",
+            "publisher" : "base",
+            "desc" : "Move or rotate the base of the robot for a certain time.",
+            "args" : [
+                {
+                    "name" : "linear",
+                    "type" : "float",
+                    "desc" : "move ahead (positive values) or backwards (negative values) the robot."
+                },
+                {
+                    "name" : "angular",
+                    "type" : "float",
+                    "desc" : "rotate the robot (clockwise positive)."
+                },
+                {
+                    "name" : "duration",
+                    "type" : "float",
+                    "desc" : "duration in seconds."
+                }
+            ]
+        },
+        {
+            "name" : "moveto",
+            "publisher" : "base",
+            "desc" : "Move the robot towards a model.",
+            "args" : [
+                {
+                    "name" : "model",
+                    "type" : "string",
+                    "desc" : "name of the model where the robot should move to."
+                }
+            ]
+        },
+        {
+            "name" : "head",
+            "publisher": "head",
+            "desc" : "Move the head of the robot.",
+            "args" : [
+                {
+                    "name" : "horizontal",
+                    "type" : "float",
+                    "desc" : "move head horizontally (values between -1 and 1)."
+                },
+                {
+                    "name" : "vertical",
+                    "type" : "float",
+                    "desc" : "move head vertically (values between -1 and 1)."
+                },
+                {
+                    "name" : "duration",
+                    "type" : "float",
+                    "desc" : "duration in seconds."
+                }
+            ]
+        },
+        {
+            "name" : "torso",
+            "desc" : "Lift or lower the robot's torso.",
+            "args" : [
+                {
+                    "name" : "position",
+                    "type" : "float",
+                    "desc" : "target torso's height from the base in meters. (Max lift strokes 0.35 meters)."
+                },
+                {
+                    "name" : "duration",
+                    "type" : "float",
+                    "desc" : "duration in seconds."
+                }
+            ]
+        },
+        {
+            "name" : "tts",
+            "desc" : "Text to speech.",
+            "args" : [
+                {
+                    "name" : "text",
+                    "type" : "string",
+                    "desc" : "text to reproduce."
+                }
+            ]
+        },
+        {
+            "name" : "play",
+            "publisher" : "play_motion",
+            "desc" : "Play a predefined motion.",
+            "args" : [
+                {
+                    "name" : "name",
+                    "type" : "string",
+                    "desc" : "predefined motion name."
+                }
+            ]
+        },
+        {
+            "name" : "pick",
+            "publisher" : "grasp",
+            "desc" : "Pick up an item.",
+            "args" : [
+                {
+                    "name" : "model",
+                    "type" : "string",
+                    "desc" : "name of the model to grasp."
+                }
+            ]
+        },
+        {
+            "name" : "place",
+            "publisher" : "grasp",
+            "desc" : "Place an item.",
+            "args" : [
+                {
+                    "name" : "model",
+                    "type" : "string",
+                    "desc" : "name of the model where the grasped item should be placed."
+                }
+            ]
+        }
+    ]
+}

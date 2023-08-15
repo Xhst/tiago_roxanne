@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import rospy
 import actionlib
+from std_msgs.msg import String
 from pal_interaction_msgs.msg import TtsAction, TtsGoal
 
 class TiagoTTSController:
@@ -9,19 +10,37 @@ class TiagoTTSController:
         self.node_name = 'tts_controller'
         self.client = None
 
+        self.lang_id = rospy.get_param('tts_lang_id', 'en_GB')
+        self.wait_before_speaking = rospy.get_param('tts_wait_before_speaking', 0)
+
+
+    def say(self, text, lang_id = 'en_GB'):
+        goal = TtsGoal()
+        goal.wait_before_speaking = self.wait_before_speaking
+        goal.rawtext.text = text
+        goal.rawtext.lang_id = lang_id
+
+        self.client.send_goal_and_wait(goal)
+
+
+    def callback(self, message):
+        data = message.data
+        print(message)
+        self.say(data, self.lang_id)
+        
+
     def start(self):
         rospy.init_node(self.node_name, anonymous=False)
         rospy.loginfo('Node %s started', self.node_name)
+        
+        rospy.loginfo('Connecting to tts Action Server.')
         self.client = actionlib.SimpleActionClient('tts_to_soundplay', TtsAction)
         self.client.wait_for_server()
-        #
-        rospy.sleep(2)
-        goal = TtsGoal()
-        text = "Text to speak"
-        goal.rawtext.text = text
-        goal.rawtext.lang_id = "en_GB"
-        self.client.send_goal_and_wait(goal)
-        #
+        rospy.loginfo("Succesfully connected.")
+
+        rospy.Subscriber('tts_cmd', String, self.callback)
+        rospy.spin()
+
     
 if __name__ == '__main__':
     try:
