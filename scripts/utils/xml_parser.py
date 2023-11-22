@@ -1,5 +1,6 @@
 import xml.etree.ElementTree as ET
 
+
 class XMLParser:
 
     def __init__(self, xml_file):
@@ -23,6 +24,7 @@ class XMLParser:
 
     def find_element_from_root(self, tag, attributes = {}):
         return self.find_element(self.root, tag, attributes)
+
 
     def find_element(self, root, tag, attributes = {}):
         for child in root:

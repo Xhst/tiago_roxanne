@@ -4,44 +4,42 @@ import os
 import rospy
 from actionlib import SimpleActionClient
 from std_msgs.msg import String
-from geometry_msgs.msg import Twist, Vector3
 from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
+from roxanne_rosjava_msgs.msg import TokenExecution, TokenExecutionFeedback
 from tiago_hrc.srv import ModelPose
+
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+
+from utils.pose import posestamped_from_xy_and_cardinal_point
 
 
 class TiagoBaseController:
 
     def __init__(self):
         self.node_name = 'base_controller'
-        self.publisher = None
 
         self.use_model_pose_service = rospy.get_param('use_model_pose_service', False)
+        self.use_roxanne = rospy.get_param('use_roxanne', True)
 
 
-    def move_to(self, pose, timeout = rospy.Duration.from_sec(10.0)):
+    def get_movebasegoal_from_pose(self, pose):
         goal = MoveBaseGoal()
         goal.target_pose = pose
+        goal.target_pose.header.frame_id = "map"
+        goal.target_pose.header.stamp = rospy.Time.now()
+        return goal
+
+
+    def move_to(self, pose, timeout = rospy.Duration.from_sec(300.0)):
+        goal = self.get_movebasegoal_from_pose(pose)
 
         self.client.send_goal(goal)
-        self.client.wait_for_result(timeout)
+        result = self.client.wait_for_result(timeout)
 
-
-    def move(self, linear, angular, duration):
-        twist = Twist()
-        twist.linear = linear
-        twist.angular = angular
-
-        now = rospy.Time.now()
-        end_duration = now + rospy.Duration.from_sec(duration)
-
-        rate = rospy.Rate(10)
-        while rospy.Time.now() < end_duration:
-            self.publisher.publish(twist)
-            rate.sleep()
+        return result
 
 
     def move_to_model(self, model):
-        print("moveto")
         try:
             poseResponse = self.model_pose_service(model)
             self.move_to(poseResponse.pose)
@@ -50,23 +48,20 @@ class TiagoBaseController:
         except NameError:
             rospy.logwarn('Model pose service is disabled.')
 
-
-    def move_cmd(self, data):
-        print("move")
+    
+    def move_to_cmd(self, data):
         split = data.split(" ")
-        
-        linear = Vector3()
-        linear.x = float(split[0])
 
-        angular = Vector3()
-        angular.z = float(split[1])
+        pose_stamped = posestamped_from_xy_and_cardinal_point(
+            float(split[0]),
+            float(split[1]),
+            split[2]
+        )
 
-        duration = float(split[2])
-
-        self.move(linear, angular, duration)
+        self.move_to(pose_stamped)
 
 
-    def callback(self, message):
+    def command_callback(self, message):
         msg_data = message.data
 
         print(msg_data)
@@ -75,10 +70,45 @@ class TiagoBaseController:
         command = split[0]
         data = split[1]
 
+        print(command)
         if command == 'moveto':
+            self.move_to_cmd(data)
+        if command == 'movetomodel':
             self.move_to_model(data)
-        if command == 'base':
-            self.move_cmd(data)
+
+    
+    def roxanne_execution_callback(self, execution):
+        rospy.loginfo(execution)
+        if execution.token.component == 'base':
+
+            if execution.token.predicate == '_MovingTo' and len(execution.token.parameters) == 3:
+
+                pose_stamped = posestamped_from_xy_and_cardinal_point(
+                    float(execution.token.parameters[0]),
+                    float(execution.token.parameters[1]),
+                    execution.token.parameters[2]
+                )
+                
+                result = self.move_to(pose_stamped)
+                self.send_roxanne_feedback(int(result != 0), execution.tokenId)
+
+
+    def send_roxanne_feedback(self, code, id):
+        feedback = TokenExecutionFeedback()
+        feedback.tokenId = id
+        feedback.code = code
+
+        self.roxanne_publisher.publish(feedback)
+
+    
+    def connect_roxanne_nodes(self):
+        if not bool(self.use_roxanne):
+            return
+
+        rospy.loginfo('Starting /roxanne/acting/feedback/base')
+        self.roxanne_publisher = rospy.Publisher('/roxanne/acting/feedback/base', TokenExecutionFeedback, queue_size=1)
+        rospy.loginfo('Subscribing to /roxanne/acting/dispatching/base')
+        rospy.Subscriber('/roxanne/acting/dispatching/base', TokenExecution, self.roxanne_execution_callback)
 
 
     def connect_model_pose_service(self):
@@ -95,16 +125,15 @@ class TiagoBaseController:
         rospy.init_node(self.node_name, anonymous=False)
         rospy.loginfo('Node %s started', self.node_name)
 
-        self.publisher = rospy.Publisher('/mobile_base_controller/cmd_vel', Twist, queue_size=10)
+        self.connect_roxanne_nodes()
+        self.connect_model_pose_service()
 
         rospy.loginfo("Connecting to move_base Action Server.")
         self.client = SimpleActionClient("move_base", MoveBaseAction)
         self.client.wait_for_server()
         rospy.loginfo('Succesfully connected.')
 
-        self.connect_model_pose_service()
-
-        rospy.Subscriber('base_cmd', String, self.callback)
+        rospy.Subscriber('base_cmd', String, self.command_callback)
 
         rospy.spin()
         

@@ -25,8 +25,8 @@ class TiagoTTSController:
 
     def callback(self, message):
         data = message.data
-        print(message)
-        self.say(data, self.lang_id)
+        split = data.split(" ", 1)
+        self.say(split[1], self.lang_id)
         
 
     def start(self):

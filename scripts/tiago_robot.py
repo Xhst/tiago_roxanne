@@ -13,8 +13,8 @@ class TiagoRobot:
         self.nodes = [
             {'pkg':'tiago_hrc', 'name':'head_controller', 'namespace':'controllers'},
             {'pkg':'tiago_hrc', 'name':'base_controller', 'namespace':'controllers'},
-            {'pkg':'tiago_hrc', 'name':'torso_controller', 'namespace':'controllers'},
-            {'pkg':'tiago_hrc', 'name':'tts_controller', 'namespace':'controllers'},
+            {'pkg':'tiago_hrc', 'name':'torso_controller', 'namespace':'controllers', 'sleep':15},
+            {'pkg':'tiago_hrc', 'name':'tts_controller', 'namespace':'controllers', 'sleep':15},
             {'pkg':'tiago_hrc', 'name':'play_motion_controller', 'namespace':'controllers', 'sleep':15},
             {'pkg':'tiago_hrc', 'name':'grasp_controller', 'namespace':'controllers'},
         ]
@@ -38,17 +38,22 @@ class TiagoRobot:
         '''
         rospy.loginfo('Starting node %s from package %s.', node_name, package)        
 
+        node_to_launch = Node(package, node_name+'.py', node_name, namespace, None, args)
+
         ros_launch = ROSLaunch()
         ros_launch.start()
-        ros_launch.launch(Node(package, node_name+'.py', node_name, namespace, None, args))
+
+        ros_launch.launch(node_to_launch)
 
         rospy.loginfo('Node %s started.', node_name)
+        rospy.sleep(1)
 
 
     def launch_nodes(self):
         '''
         Launch all the roslaunch nodes instances
         '''
+
         for node in self.nodes:
             try:
                 pkg = node['pkg']

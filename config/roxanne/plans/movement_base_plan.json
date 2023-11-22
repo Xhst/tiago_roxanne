@@ -1,0 +1,13 @@
+{
+    "acting_goals" : [
+        {
+            "goal_tokens" : [
+                {
+                    "component" : "robot",
+                    "predicate" : "Test"
+                }
+            ]
+        }
+
+    ]
+}

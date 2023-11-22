@@ -17,14 +17,18 @@ class AnsiColor:
     ERR = RED
     INFO = CYAN
 
+
 def err(text):
     print(AnsiColor.ERR + text + AnsiColor.END)
+
 
 def warn(text):
     print(AnsiColor.WARN + text + AnsiColor.END)
 
+
 def ok(text):
     print(AnsiColor.OK + text + AnsiColor.END)
+
 
 def info(text):
     print(AnsiColor.INFO + text + AnsiColor.END)

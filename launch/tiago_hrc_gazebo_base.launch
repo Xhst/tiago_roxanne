@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <launch>
-  <arg name="world"  default="prova"/> 
+  <arg name="world"  default="empty"/> 
   <arg name="robot"  default="titanium"/>
   <arg name="arm"  default="$(eval {'iron': False}.get(arg('robot'), True))"/>
   <arg name="end_effector"  default="$(eval {'iron': 'false', 'steel': 'pal-gripper', 'titanium': 'pal-hey5'}.get(arg('robot'), 'pal-gripper'))"/>
@@ -22,7 +22,7 @@
   <arg name="global_planner" default="global_planner"/>
   <arg name="local_planner"  default="$(eval 'teb' if (arg('public_sim') or arg('base_type')=='omni_base') else 'pal')"/>
   <arg name="localization"   default="amcl"/>
-  <arg name="map"            default="$(find tiago_hrc)/config/navigation/maps/$(arg world)"/>
+  <arg name="map"            default="$(find tiago_hrc)/config/navigation/maps/$(arg world)/"/>
 
   <arg name="advanced_grasping"     default="false"/> <!-- Requires extra software from PAL Robotics -->
   <arg name="advanced_navigation"   default="false"/> <!-- Requires extra software from PAL Robotics-->
@@ -66,13 +66,15 @@
   <node pkg="tts" name="tts_to_soundplay" type="tts_to_soundplay.py" />
 
   <!-- tiago hrc -->
+  <arg name="use_roxanne" default="true"/>
   <arg name="use_model_pose_service" default="true"/>
   <arg name="rviz" default="false"/>
 
+  <param name="use_roxanne" value="$(arg use_roxanne)" />
   <param name="use_model_pose_service" value="$(arg use_model_pose_service)" />
+
   <rosparam command="load" file="$(find tiago_hrc)/config/pick_and_place_params.yaml" />
   <rosparam command="load" file="$(find tiago_hrc)/config/pick_motions.yaml" />
-  <rosparam command="load" file="$(find tiago_hrc)/config/pregrasp_motion.yaml" />
   <rosparam command="load" file="$(find tiago_hrc)/config/tts_params.yaml" />
 
   <group if="$(arg rviz)">
@@ -81,7 +83,6 @@
 
   <node pkg="tiago_hrc" name="model_pose_service" type="model_pose_service.py" args="$(find tiago_hrc)/worlds/$(arg world).world"/>
 
-  <!--<node pkg="tiago_hrc" name="tiago_robot" type="tiago_robot.py" />-->
   <node pkg="tiago_hrc" name="tiago_robot" type="tiago_robot.py"/>
   <node pkg="tiago_hrc" name="base_controller" type="base_controller.py"/>
   <node pkg="tiago_hrc" name="head_controller" type="head_controller.py"/>

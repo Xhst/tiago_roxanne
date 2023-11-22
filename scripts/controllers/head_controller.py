@@ -24,15 +24,25 @@ class TiagoHeadController:
 
     def callback(self, message):
         data = message.data
-
+        print(data)
         split = data.split(" ")
 
-        horizontal_position = float(split[0])
-        vertical_position = float(split[1])
-        duration = int(split[2])
+        horizontal_position = float(split[1])
+        vertical_position = float(split[2])
+        duration = int(split[3])
 
         self.move_to(horizontal_position, vertical_position, duration)
 
+
+    def connect_roxanne_nodes(self):
+        if not bool(self.use_roxanne):
+            return
+
+        rospy.loginfo('Starting /roxanne/acting/feedback/base')
+        self.roxanne_publisher = rospy.Publisher('/roxanne/acting/feedback/base', TokenExecutionFeedback, queue_size=1)
+        rospy.loginfo('Subscribing to /roxanne/acting/dispatching/base')
+        rospy.Subscriber('/roxanne/acting/dispatching/base', TokenExecution, self.roxanne_execution_callback)
+        
 
     def start(self):
         rospy.init_node(self.node_name, anonymous=False)

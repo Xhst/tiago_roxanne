@@ -12,7 +12,7 @@ class TiagoTTSController:
         self.client = None
 
 
-    def motion(self, motion_name, timeout = rospy.Duration(10)):
+    def motion(self, motion_name, timeout = rospy.Duration(30)):
         goal = PlayMotionGoal()
         goal.motion_name = motion_name
 
@@ -22,7 +22,9 @@ class TiagoTTSController:
     def callback(self, message):
         data = message.data
 
-        self.motion(data)
+        split = data.split(" ", 1)
+
+        self.motion(split[1])
 
 
     def start(self):

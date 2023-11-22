@@ -1,29 +1,29 @@
 {
     "commands": [
         {
-            "name" : "base",
+            "name" : "moveto",
             "publisher" : "base",
-            "desc" : "Move or rotate the base of the robot for a certain time.",
+            "desc" : "Move the robot to a position.",
             "args" : [
                 {
-                    "name" : "linear",
+                    "name" : "x",
                     "type" : "float",
-                    "desc" : "move ahead (positive values) or backwards (negative values) the robot."
+                    "desc" : "x position where the robot should move to."
                 },
                 {
-                    "name" : "angular",
+                    "name" : "y",
                     "type" : "float",
-                    "desc" : "rotate the robot (clockwise positive)."
+                    "desc" : "y position where the robot should move to."
                 },
                 {
-                    "name" : "duration",
-                    "type" : "float",
-                    "desc" : "duration in seconds."
+                    "name" : "cardinal",
+                    "type" : "string",
+                    "desc" : "cardinal point where the robot should facing (north|south|west|east|north_west|north_east|south_west|south_east)."
                 }
             ]
         },
         {
-            "name" : "moveto",
+            "name" : "movetomodel",
             "publisher" : "base",
             "desc" : "Move the robot towards a model.",
             "args" : [
@@ -36,7 +36,6 @@
         },
         {
             "name" : "head",
-            "publisher": "head",
             "desc" : "Move the head of the robot.",
             "args" : [
                 {

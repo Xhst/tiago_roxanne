@@ -3,12 +3,12 @@ import rospy
 import sys
 import os
 from tiago_hrc.srv import ModelPose
-from geometry_msgs.msg import PoseStamped
-from tf.transformations import quaternion_from_euler
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 from utils.xml_parser import XMLParser
+from utils.pose import posestamped_from_positions_and_euler_angles
+
 
 class ModelPoseService:
 
@@ -25,25 +25,16 @@ class ModelPoseService:
             pose_str = self.world_parser.find_element(model, 'pose').text
             pose_parsed = pose_str.split(' ')
 
-            pose_stamped = PoseStamped()
-
-            pose_stamped.header.frame_id = 'map'
-            pose_stamped.header.stamp = rospy.Time.now()
-
-            pose_stamped.pose.position.x = float(pose_parsed[0])
-            pose_stamped.pose.position.y = float(pose_parsed[1])
-            pose_stamped.pose.position.z = float(pose_parsed[2])
-
-            quaternion = quaternion_from_euler(float(pose_parsed[3]), float(pose_parsed[4]), float(pose_parsed[5]))
-            pose_stamped.pose.orientation.x = quaternion[0]
-            pose_stamped.pose.orientation.y = quaternion[1]
-            pose_stamped.pose.orientation.z = quaternion[2]
-            pose_stamped.pose.orientation.w = quaternion[3]
-
-            return pose_stamped
+            return posestamped_from_positions_and_euler_angles(
+                float(pose_parsed[0]),
+                float(pose_parsed[1]),
+                float(pose_parsed[2]),
+                float(pose_parsed[3]),
+                float(pose_parsed[4]),
+                float(pose_parsed[5]),
+            )
         except:
             return None
-        
 
 
     def start(self):

@@ -4,6 +4,7 @@ import stat
 import rospy
 from tiago_hrc.srv import permission, permissionResponse
 
+
 def callback(request):
     '''Make the request path executable (chmod +x)'''
     try:

@@ -92,11 +92,7 @@ class TiagoInput:
             
             commandData = self.commands[command]
 
-            extra_cmd_arg = ''
-            if (commandData.publisher_name != commandData.name):
-                extra_cmd_arg = command + ' '
-
-            self.publishers[commandData.publisher_name].publish(extra_cmd_arg + args)
+            self.publishers[commandData.publisher_name].publish(command + ' ' + args)
         except:
             warn('Invalid command.')
 

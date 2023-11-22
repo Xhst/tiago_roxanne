@@ -50,6 +50,7 @@ generate_messages(
 )
 
 catkin_package(
+    CATKIN_DEPENDS roxanne_rosjava_msgs
 #  INCLUDE_DIRS include
 #  LIBRARIES tiago_hrc
 #  CATKIN_DEPENDS other_catkin_pkg
@@ -57,7 +58,7 @@ catkin_package(
 )
 
 catkin_install_python(
-    PROGRAMS scripts/tiago_robot.py scripts/tiago_input.py scripts/services/permission_service.py
+    PROGRAMS scripts/tiago_robot.py scripts/tiago_input.py scripts/tiago_roxanne.py scripts/services/permission_service.py
     DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

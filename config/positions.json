@@ -1,0 +1,13 @@
+{
+    "home" : {
+        "x" : 0.0,
+        "y" : 0.0,
+        "cardinal" : "north"
+    },
+
+    "test" : {
+        "x" : 0.0,
+        "y" : -3.0,
+        "cardinal" : "south"
+    }
+}

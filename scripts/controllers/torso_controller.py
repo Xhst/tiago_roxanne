@@ -3,6 +3,7 @@ import rospy
 from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 from std_msgs.msg import String
 
+
 class TiagoHeadController:
 
     def __init__(self):
@@ -25,7 +26,8 @@ class TiagoHeadController:
     def callback(self, message):
         data = message.data
 
-        split = data.split(" ")
+        cmd = data.split(" ", 1)
+        split = cmd[1].split(" ")
 
         position = float(split[0])
         duration = int(split[1])
