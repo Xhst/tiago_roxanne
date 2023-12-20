@@ -52,7 +52,7 @@ class TiagoRoxanne:
 
 if __name__ == '__main__':
     try:
-        tiago_input = TiagoRoxanne('test_plan.json')
+        tiago_input = TiagoRoxanne('test_plan2.json')
         tiago_input.start()
     except rospy.ROSInterruptException:
         pass

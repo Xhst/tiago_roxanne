@@ -76,7 +76,7 @@ DOMAIN TIAGO_HRC {
 			At(?location);
             
             // location constraint
-			?location = ?dest_location;
+			//?location = ?dest_location;
 		}
     }
 
@@ -190,12 +190,13 @@ DOMAIN TIAGO_HRC {
         }
     }
 
-    COMP_TYPE SingletonStateVariable RobotController(Idle(), MoveTo(location), Operation(location, motion)) {
+    COMP_TYPE SingletonStateVariable RobotController(Idle(), GoHome(), MoveTo(location), Operation(location, motion)) {
 
         VALUE Idle() [1, +INF]
         MEETS {
             MoveTo(?to);
             Operation(?location, ?motion);
+            GoHome();
         }
 
         VALUE MoveTo(?to) [1, +INF]
@@ -207,6 +208,30 @@ DOMAIN TIAGO_HRC {
         MEETS {
             Idle();
         }
+
+        VALUE GoHome() [1, +INF]
+        MEETS {
+            Idle();
+        }
+    }
+
+    COMP_TYPE SingletonStateVariable GuestController(None(), Arrive(location), Leave(location)) {
+
+        VALUE None() [0, +INF]
+        MEETS {
+            Arrive(?table);
+            Leave(?table);
+        }
+
+        VALUE Arrive(?table) [1, 1]
+        MEETS {
+            None();
+        }
+
+        VALUE Leave(?table) [1, 1]
+        MEETS {
+            None();
+        }
     }
 
     // Components 
@@ -216,7 +241,34 @@ DOMAIN TIAGO_HRC {
     COMPONENT torso       {FLEXIBLE torso_goals(primitive)} : TorsoController;
     COMPONENT grasp       {FLEXIBLE grasp_goals(primitive)} : GraspController;
     COMPONENT play_motion {FLEXIBLE pm_goals(primitive)} : PlayMotionController;
-    COMPONENT robot       {FLEXIBLE robot_goals(functional)} : RobotController;
+    COMPONENT robot       {FLEXIBLE robot_goals(primitive)} : RobotController;
+    COMPONENT guest       {FLEXIBLE arrivals(primitive)} : GuestController;
+
+    SYNCHRONIZE guest.arrivals {
+        VALUE Arrive(?location) {
+            d0 <!> robot.robot_goals.Operation(?loc, ?motion);
+            d1 robot.robot_goals.GoHome();
+
+            d0 BEFORE [0, +INF] d1;
+
+            BEFORE [0, +INF] d0;
+
+            ?motion = wave;
+            ?loc = ?location;
+        }
+
+        VALUE Leave(?location) {
+            d0 <!> robot.robot_goals.Operation(?loc, ?motion);
+            d1 robot.robot_goals.GoHome();
+
+            d0 BEFORE [0, +INF] d1;
+            
+            BEFORE [0, +INF] d0;
+
+            ?motion = shake_hands;
+            ?loc = ?location;
+        }
+    }
 
     SYNCHRONIZE robot.robot_goals {
 
@@ -229,21 +281,24 @@ DOMAIN TIAGO_HRC {
 		}
 
         VALUE Operation(?location, ?motion) {
-            // ! expand
-
             d1 <!> base.positions._MovingTo(?l1);
             d2 play_motion.pm_goals.Playing(?m0);
-            d3 base.positions._MovingTo(?l0);
 
             CONTAINS [0, +INF] [0, +INF] d1;
             CONTAINS [0, +INF] [0, +INF] d2;
 
             d1 BEFORE [0, +INF] d2;
-            d2 BEFORE [0, +INF] d3;
 
-            ?l0 = home;
             ?l1 = ?location;
             ?m0 = ?motion;
+        }
+
+        VALUE GoHome() {
+            d0 <!> base.positions._MovingTo(?l0);
+
+            CONTAINS [0, +INF] [0, +INF] d0;
+
+            ?l0 = home;
         }
     }
 
