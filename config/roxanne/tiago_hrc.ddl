@@ -242,7 +242,7 @@ DOMAIN TIAGO_HRC {
     COMPONENT grasp       {FLEXIBLE grasp_goals(primitive)} : GraspController;
     COMPONENT play_motion {FLEXIBLE pm_goals(primitive)} : PlayMotionController;
     COMPONENT robot       {FLEXIBLE robot_goals(primitive)} : RobotController;
-    COMPONENT guest       {FLEXIBLE arrivals(primitive)} : GuestController;
+    COMPONENT guest       {FLEXIBLE arrivals(functional)} : GuestController;
 
     SYNCHRONIZE guest.arrivals {
         VALUE Arrive(?location) {
