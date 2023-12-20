@@ -1,0 +1,25 @@
+{
+    "acting_goals" : [
+        {
+            "goal_tokens" : [
+                {
+                    "component" : "robot",
+                    "predicate" : "MoveTo",
+                    "parameters" : ["test"]
+                }
+
+            ],
+
+            "fact_tokens" : [
+                {
+                    "component" : "base",
+                    "predicate" : "At",
+                    "parameters" : ["home"],
+                    "start" : [0, 0],
+                    "end" : [0, 1500],
+                    "duration" : [1, 1500]
+                }
+            ]
+        }
+    ]
+}

@@ -73,8 +73,8 @@
   <param name="use_roxanne" value="$(arg use_roxanne)" />
   <param name="use_model_pose_service" value="$(arg use_model_pose_service)" />
 
-  <rosparam command="load" file="$(find tiago_hrc)/config/pick_and_place_params.yaml" />
   <rosparam command="load" file="$(find tiago_hrc)/config/pick_motions.yaml" />
+  <rosparam command="load" file="$(find tiago_hrc)/config/pick_and_place_params.yaml" />
   <rosparam command="load" file="$(find tiago_hrc)/config/tts_params.yaml" />
 
   <group if="$(arg rviz)">
@@ -82,6 +82,7 @@
   </group>
 
   <node pkg="tiago_hrc" name="model_pose_service" type="model_pose_service.py" args="$(find tiago_hrc)/worlds/$(arg world).world"/>
+  <node pkg="tiago_hrc" name="position_service" type="position_service.py"/>
 
   <node pkg="tiago_hrc" name="tiago_robot" type="tiago_robot.py"/>
   <node pkg="tiago_hrc" name="base_controller" type="base_controller.py"/>

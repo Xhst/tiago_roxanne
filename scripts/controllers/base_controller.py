@@ -6,7 +6,7 @@ from actionlib import SimpleActionClient
 from std_msgs.msg import String
 from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 from roxanne_rosjava_msgs.msg import TokenExecution, TokenExecutionFeedback
-from tiago_hrc.srv import ModelPose
+from tiago_hrc.srv import Position
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
@@ -18,7 +18,6 @@ class TiagoBaseController:
     def __init__(self):
         self.node_name = 'base_controller'
 
-        self.use_model_pose_service = rospy.get_param('use_model_pose_service', False)
         self.use_roxanne = rospy.get_param('use_roxanne', True)
 
 
@@ -81,16 +80,19 @@ class TiagoBaseController:
         rospy.loginfo(execution)
         if execution.token.component == 'base':
 
-            if execution.token.predicate == '_MovingTo' and len(execution.token.parameters) == 3:
+            if execution.token.predicate == '_MovingTo' and len(execution.token.parameters) == 1:
 
-                pose_stamped = posestamped_from_xy_and_cardinal_point(
-                    float(execution.token.parameters[0]),
-                    float(execution.token.parameters[1]),
-                    execution.token.parameters[2]
-                )
+                response = self.position_service(str(execution.token.parameters[0]))
                 
+                pose_stamped = posestamped_from_xy_and_cardinal_point(
+                    response.x,
+                    response.y,
+                    response.cardinal_point
+                )
+
                 result = self.move_to(pose_stamped)
-                self.send_roxanne_feedback(int(result != 0), execution.tokenId)
+                
+                self.send_roxanne_feedback(int(not result), execution.tokenId)
 
 
     def send_roxanne_feedback(self, code, id):
@@ -111,13 +113,10 @@ class TiagoBaseController:
         rospy.Subscriber('/roxanne/acting/dispatching/base', TokenExecution, self.roxanne_execution_callback)
 
 
-    def connect_model_pose_service(self):
-        if not bool(self.use_model_pose_service):
-            return
-        
-        rospy.loginfo('Connecting to model_pose_service.')
-        self.model_pose_service = rospy.ServiceProxy('model_pose', ModelPose)
-        self.model_pose_service.wait_for_service()
+    def connect_position_service(self):
+        rospy.loginfo('Connecting to position_service.')
+        self.position_service = rospy.ServiceProxy('position_service', Position)
+        self.position_service.wait_for_service()
         rospy.loginfo('Succesfully connected.')
 
 
@@ -126,7 +125,7 @@ class TiagoBaseController:
         rospy.loginfo('Node %s started', self.node_name)
 
         self.connect_roxanne_nodes()
-        self.connect_model_pose_service()
+        self.connect_position_service()
 
         rospy.loginfo("Connecting to move_base Action Server.")
         self.client = SimpleActionClient("move_base", MoveBaseAction)

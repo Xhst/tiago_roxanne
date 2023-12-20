@@ -1,0 +1,40 @@
+{
+    "acting_goals" : [
+        {
+            "goal_tokens" : [
+                {
+                    "component" : "play_motion",
+                    "predicate" : "Playing",
+                    "parameters" : ["wave"]
+                }
+            ],
+
+            "fact_tokens" : [
+                {
+                    "component" : "play_motion",
+                    "predicate" : "Idle",
+                    "start" : [0, 0]
+                }
+            ]
+        },
+
+        {
+            "goal_tokens" : [
+                {
+                    "component" : "play_motion",
+                    "predicate" : "Playing",
+                    "parameters" : ["home"]
+                }
+            ],
+
+            "fact_tokens" : [
+                {
+                    "component" : "play_motion",
+                    "predicate" : "Idle",
+                    "start" : [0, 0]
+                }
+            ]
+        }
+
+    ]
+}

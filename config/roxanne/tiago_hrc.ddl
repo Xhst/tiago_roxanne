@@ -4,21 +4,52 @@ DOMAIN TIAGO_HRC {
      * [0, 1500] -> min and max time of execution of the whole domain.
      * 1000 -> time slots (unused)
      */ 
-    TEMPORAL_MODULE temporal_module = [0, 1500], 1000;
+    TEMPORAL_MODULE temporal_module = [0, 10000], 1000;
 
     // Enumerators
 
     PAR_TYPE EnumerationParameterType location = {
         home,
-        test
+        starting_point,
+        table_1,
+        table_2
     };
+
+    PAR_TYPE EnumerationParameterType motion = {
+        // default motions
+        home,
+        unfold_arm,
+        reach_floor,
+        reach_max,
+        head_tour,
+        wave,
+        pregrasp_weight,
+        do_weights,
+        pick_from_floor,
+        shake_hands,
+        open_hand,
+        close_hand,
+        pointing_hand,
+        gun_hand,
+        thumb_up_hand,
+        pinch_hand,
+
+        // pick motions
+        pregrasp,
+        pick_final_pose
+
+    };
+
+    PAR_TYPE NumericParameterType head_pos = [-100, 100];
+
+    PAR_TYPE NumericParameterType torso_pos = [0, 35];
 
     // Component types
 
     /**
      * Definition of the component BaseController used to move the robot.
      */
-    COMP_TYPE SingletonStateVariable BaseController(At(location), _MovingTo(dest_location)) {
+    COMP_TYPE SingletonStateVariable BaseController(At(location), _MovingTo(location)) {
 
         /**
          * At is the state of the robot when it's not moving. 
@@ -28,7 +59,6 @@ DOMAIN TIAGO_HRC {
          * Adjacent states: _MovingTo
          */
         VALUE At(?location) [1, +INF]
-        // see Allen's Relations (BEFORE, AFTER, MEETS, DURING, ...) https://dl.acm.org/doi/10.1145/182.358434
 		MEETS {
 			_MovingTo(?dest_location);
 		}
@@ -53,17 +83,15 @@ DOMAIN TIAGO_HRC {
     /**
      * Definition of the component HeadController used to move head of the robot.
      */
-    COMP_TYPE SingletonStateVariable HeadController(LookingAt(at_h_pos, at_v_pos), Moving(to_h_pos, to_v_pos)) {
+    COMP_TYPE SingletonStateVariable HeadController(Idle(), Moving(head_pos, head_pos)) {
 
         /**
-         * LookingAt is the state in which the robot head is not moving.
-         * The horizontal position of the head is 'at_h_pos'.
-         * The vertical position of the head is 'at_v_pos'.
+         * Idle state of head.
          * 
          * Duration: 1 to +INF time units
-         * Adjacent states: Moving
+         * Adjacente states: Moving
          */
-        VALUE LookingAt(?at_h_pos, ?at_v_pos) [1, +INF]
+        VALUE Idle() [1, +INF]
         MEETS {
             Moving(?to_h_pos, ?to_v_pos);
         }
@@ -73,28 +101,22 @@ DOMAIN TIAGO_HRC {
          * The horizontal destination position of the head is 'to_h_pos'.
          * The vertical destination position of the head is 'to_v_pos'.
          * 
-         * Duration: 1 to 30 time units
+         * Duration: 1 to 5 time units
          * Adjacent states: LookingAt
-         * Constraints: vertical and horizontal positions of destination are the same as the corresponding ones of LookingAt.
          */
-        VALUE Moving(?to_h_pos, ?to_v_pos) [1, 30]
+        VALUE Moving(?to_h_pos, ?to_v_pos) [1, 5]
         MEETS {
-            LookingAt(?at_h_pos, ?at_v_pos);
-
-            // head positions constraints
-            ?at_h_pos = ?to_h_pos;
-            ?at_v_pos = ?to_v_pos;
+            Idle();
         }
     }
 
     /**
      * Definition of the component TorsoController used to lift or lower the robot's torso.
      */
-    COMP_TYPE SingletonStateVariable TorsoController(Idle(), Moving(pos)) {
+    COMP_TYPE SingletonStateVariable TorsoController(Idle(), Moving(torso_pos)) {
 
         /**
          * Idle state of torso.
-         * Is standing still at the height 'pos'.
          * 
          * Duration: 1 to +INF time units
          * Adjacente states: Moving
@@ -108,39 +130,10 @@ DOMAIN TIAGO_HRC {
          * Moving is the state in which the torso is lifting or lowering.
          * The destination height is 'pos'.
          * 
-         * Duration: 1 to 30 time units
+         * Duration: 1 to 15 time units
          * Adjacent states: Idle
          */
-        VALUE Moving(?pos) [1, 30]
-        MEETS {
-            Idle();
-        }
-    }
-
-    /**
-     * Definition of the component TTSController (Text To Speech) used to reproduce sentences.
-     */
-    COMP_TYPE SingletonStateVariable TTSController(Idle(), Talking(text)) {
-
-        /**
-         * Idle is the state in which the robot is not talking.
-         * 
-         * Duration: 1 to +INF time units
-         * Adjacent states: Talking
-         */
-        VALUE Idle() [1, +INF]
-        MEETS {
-            Talking(?text);
-        }
-
-        /**
-         * Talking is the state in which the robot is reproducing a sentence.
-         * Reporducing the 'text' sentence.
-         * 
-         * Duration: 1 to 60 time units
-         * Adjacent states: Idle
-         */
-        VALUE Talking(?text) [1, 60]
+        VALUE Moving(?pos) [1, 15]
         MEETS {
             Idle();
         }
@@ -188,62 +181,70 @@ DOMAIN TIAGO_HRC {
          * Playing is the state in which the robot is executing a predefined motion.
          * Executing the 'motion' motion.
          * 
-         * Duration: 1 to 50 time units
+         * Duration: 1 to 10 time units
          * Adjacent states: Idle
          */
-        VALUE Playing(?motion) [1, 50]
+        VALUE Playing(?motion) [1, 10]
         MEETS {
             Idle();
         }
     }
 
-    COMP_TYPE SingletonStateVariable RobotController(Idle(), MoveTo(from, to), Test()) {
+    COMP_TYPE SingletonStateVariable RobotController(Idle(), MoveTo(location), Operation(location, motion)) {
 
         VALUE Idle() [1, +INF]
         MEETS {
-            MoveTo(?from, ?to);
-            Test();
+            MoveTo(?to);
+            Operation(?location, ?motion);
         }
 
-        VALUE MoveTo(?from, ?to) [1, +INF]
+        VALUE MoveTo(?to) [1, +INF]
         MEETS {
             Idle();
         }
 
-        VALUE Test() [1, +INF] 
+        VALUE Operation(?location, ?motion) [1, +INF]
         MEETS {
             Idle();
-
         }
     }
 
     // Components 
 
     COMPONENT base        {FLEXIBLE positions(primitive)} : BaseController;
-    COMPONENT head        {FLEXIBLE goals(primitive)} : HeadController;
-    COMPONENT tts         {FLEXIBLE goals(primitive)} : TTSController;
-    COMPONENT grasp       {FLEXIBLE goals(primitive)} : GraspController;
-    COMPONENT play_motion {FLEXIBLE goals(primitive)} : PlayMotionController;
-    COMPONENT robot       {FLEXIBLE goals(functional)} : RobotController;
+    COMPONENT head        {FLEXIBLE head_goals(primitive)} : HeadController;
+    COMPONENT torso       {FLEXIBLE torso_goals(primitive)} : TorsoController;
+    COMPONENT grasp       {FLEXIBLE grasp_goals(primitive)} : GraspController;
+    COMPONENT play_motion {FLEXIBLE pm_goals(primitive)} : PlayMotionController;
+    COMPONENT robot       {FLEXIBLE robot_goals(functional)} : RobotController;
 
-    SYNCHRONIZE robot.goals {
+    SYNCHRONIZE robot.robot_goals {
 
-        VALUE Test() {
-            d0 <!> base.positions._MovingTo(?l0);
+        VALUE MoveTo(?location) {
+		    d0 <!> base.positions._MovingTo(?l0);
 
             CONTAINS [0, +INF] [0, +INF] d0;
 
-            ?l0 = test;
-        }
-
-        VALUE MoveTo(?location) {
-
-		    d0 <!> base.positions._MovingTo(?l0);
-
-		    CONTAINS [0, +INF] [0, +INF] d0;
-
-		    ?l0 = ?location;
+            ?l0 = ?location;
 		}
+
+        VALUE Operation(?location, ?motion) {
+            // ! expand
+
+            d1 <!> base.positions._MovingTo(?l1);
+            d2 play_motion.pm_goals.Playing(?m0);
+            d3 base.positions._MovingTo(?l0);
+
+            CONTAINS [0, +INF] [0, +INF] d1;
+            CONTAINS [0, +INF] [0, +INF] d2;
+
+            d1 BEFORE [0, +INF] d2;
+            d2 BEFORE [0, +INF] d3;
+
+            ?l0 = home;
+            ?l1 = ?location;
+            ?m0 = ?motion;
+        }
     }
 
 }

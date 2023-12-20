@@ -1,0 +1,22 @@
+{
+    "acting_goals" : [
+        {
+            "goal_tokens" : [
+                {
+                    "component" : "head",
+                    "predicate" : "Moving",
+                    "parameters" : [0, 0]
+                }
+            ],
+
+            "fact_tokens" : [
+                {
+                    "component" : "head",
+                    "predicate" : "Idle",
+                    "start" : [0, 0]
+                }
+            ]
+        }
+
+    ]
+}

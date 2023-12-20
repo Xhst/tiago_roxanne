@@ -33,6 +33,7 @@ add_service_files(
     FILES
     ModelPose.srv
     permission.srv
+    Position.srv
 )
 
 ## Generate actions in the 'action' folder
@@ -57,8 +58,13 @@ catkin_package(
 #  DEPENDS system_lib
 )
 
-catkin_install_python(
-    PROGRAMS scripts/tiago_robot.py scripts/tiago_input.py scripts/tiago_roxanne.py scripts/services/permission_service.py
+catkin_install_python(PROGRAMS 
+    scripts/tiago_robot.py 
+    scripts/tiago_input.py 
+    scripts/tiago_roxanne.py 
+    scripts/services/position_service.py 
+    scripts/services/model_pose_service.py 
+    scripts/services/permission_service.py
     DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

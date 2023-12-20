@@ -6,7 +6,7 @@ class RoxannePlanParser:
 
     def __init__(self, plan_file):
         self.plan_file = plan_file
-        self.MAX_TIME = 1200
+        self.MAX_TIME = 10000
         
 
     def parse(self):
@@ -30,7 +30,6 @@ class RoxannePlanParser:
 
             goals.append(goal)
             id = id + 1
-
         
         return goals
 
@@ -39,11 +38,11 @@ class RoxannePlanParser:
         tokens = []
         id = 1
         for token in data_tokens:
-            #try:
+            try:
                 tokens.append(self.parse_token(token, id))
                 id = id + 1
-            #except:
-                #continue
+            except:
+                continue
 
         return tokens
     
@@ -59,7 +58,7 @@ class RoxannePlanParser:
             token.parameters.append(str(parameter))
 
         token.start = data_token.get('start', [0, self.MAX_TIME])
-        token.end = data_token.get('end', [1, self.MAX_TIME])
+        token.end = data_token.get('end', [0, self.MAX_TIME])
         token.duration = data_token.get('duration', [1, self.MAX_TIME])
 
         return token

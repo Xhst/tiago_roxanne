@@ -1,0 +1,35 @@
+{
+    "acting_goals" : [
+        {
+            "goal_tokens" : [
+                {
+                    "component" : "robot",
+                    "predicate" : "MoveTo",
+                    "parameters" : ["table_1"]
+                },
+
+                {
+                    "component" : "robot",
+                    "predicate" : "MoveTo",
+                    "parameters" : ["table_2"]
+                },
+
+                {
+                    "component" : "robot",
+                    "predicate" : "MoveTo",
+                    "parameters" : ["home"]
+                }
+
+            ],
+
+            "fact_tokens" : [
+                {
+                    "component" : "base",
+                    "predicate" : "At",
+                    "parameters" : ["home"],
+                    "start" : [0, 0]
+                }
+            ]
+        }
+    ]
+}

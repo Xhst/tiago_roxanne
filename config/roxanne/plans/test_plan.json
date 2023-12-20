@@ -1,0 +1,55 @@
+{
+    "acting_goals" : [
+        {
+            "goal_tokens" : [
+                {
+                    "component" : "robot",
+                    "predicate" : "MoveTo",
+                    "parameters" : ["home"]
+                }
+
+            ],
+
+            "fact_tokens" : [
+                {
+                    "component" : "base",
+                    "predicate" : "At",
+                    "parameters" : ["starting_point"],
+                    "start" : [0, 0]
+                }
+            ]
+        },
+
+        {
+            "goal_tokens" : [
+                {
+                    "component" : "robot",
+                    "predicate" : "Operation",
+                    "parameters" : ["table_1", "wave"]
+                },
+
+                {
+                    "component" : "robot",
+                    "predicate" : "Operation",
+                    "parameters" : ["table_2", "home"]
+                }
+
+            ],
+
+            "fact_tokens" : [
+                {
+                    "component" : "base",
+                    "predicate" : "At",
+                    "parameters" : ["home"],
+                    "start" : [0, 0]
+                },
+
+                {
+                    "component" : "play_motion",
+                    "predicate" : "Idle",
+                    "start" : [0, 0]
+                }
+            ]
+        }
+    ]
+}

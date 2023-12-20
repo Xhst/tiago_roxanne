@@ -1,13 +1,31 @@
 {
-    "home" : {
+    "starting_point" : {
         "x" : 0.0,
         "y" : 0.0,
         "cardinal" : "north"
     },
 
-    "test" : {
+    "home" : {
         "x" : 0.0,
         "y" : -3.0,
-        "cardinal" : "south"
+        "cardinal" : "north"
+    },
+
+    "table_0" : {
+        "x" : 3.0,
+        "y" : -5.5,
+        "cardinal" : "north"
+    },
+
+    "table_1" : {
+        "x" : 3.0,
+        "y" : -5.5,
+        "cardinal" : "north"
+    },
+
+    "table_2" : {
+        "x" : -1.0,
+        "y" : -5.5,
+        "cardinal" : "north"
     }
 }

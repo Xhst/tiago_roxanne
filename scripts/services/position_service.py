@@ -5,34 +5,25 @@ import os
 import json
 from tiago_hrc.srv import Position
 
-
 class PositionService():
     def __init__(self, json_data):
         self.json_data = json_data
 
-    def handler(self, request):
 
-        home_position = Position()
-        home_position.x = 0.0
-        home_position.y = 0.0
-        home_position.cardinal = 'north'
+    def handler(self, request):
 
         try:
             json_pos = self.json_data.get(request.position_name)
-            position = Position()
-            position.x = json_pos.get('x', 0.0)
-            position.y = json_pos.get('y', 0.0)
-            position.cardinal = json_pos.get('cardinal', 'north')
 
-            return position
+            return (json_pos.get('x', 0.0), json_pos.get('y', 0.0), json_pos.get('cardinal', 'north'))
         except:
-            return home_position
+            return (0.0, 0.0, 'north')
         
 
     def start(self):
-        rospy.init_node('object_position_service')
-        rospy.Service('model_pose', Position, self.handler)
-        rospy.loginfo('Service "model_pose_service" started')
+        rospy.init_node('position_service')
+        rospy.Service('position_service', Position, self.handler)
+        rospy.loginfo('Service "position_service" started')
         rospy.spin()
 
 

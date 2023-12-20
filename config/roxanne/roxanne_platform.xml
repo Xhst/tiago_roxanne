@@ -28,15 +28,43 @@
 
     </command>
 
-    <command component="robot" name="*">
+    <command component="head" name="*" exclude="Idle">
 
         <dispatch-topic
-                name="/roxanne/acting/dispatching/robot"
+                name="/roxanne/acting/dispatching/head"
                 msg="roxanne_rosjava_msgs/TokenExecution"
                 publisher="com.github.roxanne_rosjava.roxanne_rosjava_taskplanner.platform.RoxanneTokenPublisher" />
 
         <feedback-topic
-                name="/roxanne/acting/feedback/robot"
+                name="/roxanne/acting/feedback/head"
+                msg="roxanne_rosjava_msgs/TokenExecutionFeedback"
+                delegate="com.github.roxanne_rosjava.roxanne_rosjava_taskplanner.platform.RoxanneFeedbackListener" />
+
+    </command>
+
+    <command component="torso" name="*" exclude="Idle">
+
+        <dispatch-topic
+                name="/roxanne/acting/dispatching/torso"
+                msg="roxanne_rosjava_msgs/TokenExecution"
+                publisher="com.github.roxanne_rosjava.roxanne_rosjava_taskplanner.platform.RoxanneTokenPublisher" />
+
+        <feedback-topic
+                name="/roxanne/acting/feedback/torso"
+                msg="roxanne_rosjava_msgs/TokenExecutionFeedback"
+                delegate="com.github.roxanne_rosjava.roxanne_rosjava_taskplanner.platform.RoxanneFeedbackListener" />
+
+    </command>
+
+    <command component="play_motion" name="*" exclude="Idle">
+
+        <dispatch-topic
+                name="/roxanne/acting/dispatching/play_motion"
+                msg="roxanne_rosjava_msgs/TokenExecution"
+                publisher="com.github.roxanne_rosjava.roxanne_rosjava_taskplanner.platform.RoxanneTokenPublisher" />
+
+        <feedback-topic
+                name="/roxanne/acting/feedback/play_motion"
                 msg="roxanne_rosjava_msgs/TokenExecutionFeedback"
                 delegate="com.github.roxanne_rosjava.roxanne_rosjava_taskplanner.platform.RoxanneFeedbackListener" />
 

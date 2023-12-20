@@ -1,0 +1,22 @@
+{
+    "acting_goals" : [
+        {
+            "goal_tokens" : [
+                {
+                    "component" : "torso",
+                    "predicate" : "Moving",
+                    "parameters" : [35]
+                }
+            ],
+
+            "fact_tokens" : [
+                {
+                    "component" : "torso",
+                    "predicate" : "Idle",
+                    "start" : [0, 0]
+                }
+            ]
+        }
+
+    ]
+}

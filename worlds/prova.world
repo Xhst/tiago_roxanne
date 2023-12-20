@@ -858,7 +858,7 @@
       <pose frame=''>2 -9.55401 0 0 -0 0</pose>
     </model>
     <model name='table'>
-      <static>0</static>
+      <static>1</static>
       <link name='link'>
         <collision name='surface'>
           <pose frame=''>0 0 0.9 0 -0 0</pose>
@@ -1066,7 +1066,7 @@
       <pose frame=''>-1 -9 0 0 -0 0</pose>
     </model>
     <model name='table_0'>
-      <static>0</static>
+      <static>1</static>
       <link name='link'>
         <collision name='surface'>
           <pose frame=''>0 0 0.9 0 -0 0</pose>
@@ -1274,7 +1274,7 @@
       <pose frame=''>-1 -7 0 0 -0 0</pose>
     </model>
     <model name='table_1'>
-      <static>0</static>
+      <static>1</static>
       <link name='link'>
         <collision name='surface'>
           <pose frame=''>0 0 0.9 0 -0 0</pose>
@@ -1479,7 +1479,7 @@
         </inertial>
         <enable_wind>0</enable_wind>
       </link>
-      <pose frame=''>-1 -11 0 0 -0 0</pose>
+      <pose frame=''>-2 -7 0 0 -0 0</pose>
     </model>
     <model name='bookshelf_4'>
       <static>0</static>
@@ -1837,20 +1837,20 @@
         </link>
       </model>
       <model name='table_0'>
-        <pose frame=''>2.73121 -7.18986 -0.111399 -0.001266 -9.5e-05 -0.000223</pose>
+        <pose frame=''>2.75 -7 -0.111399 -0.001266 -9.5e-05 -0.000223</pose>
         <scale>1 1 1</scale>
         <link name='link'>
-          <pose frame=''>2.73121 -7.18986 -0.111399 -0.001266 -9.5e-05 -0.000223</pose>
+          <pose frame=''>2.75 -7 -0.111399 -0.001266 -9.5e-05 -0.000223</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0.042586 -0.003181 -19.62 -2.14987 -0.307006 -0.012799</acceleration>
           <wrench>0.042586 -0.003181 -19.62 0 -0 0</wrench>
         </link>
       </model>
       <model name='table_1'>
-        <pose frame=''>-0.999999 -11 -0.100008 -0 -0 -2.3e-05</pose>
+        <pose frame=''>-1.25 -7 -0.100008 -0 -0 -2.3e-05</pose>
         <scale>1 1 1</scale>
         <link name='link'>
-          <pose frame=''>-0.999999 -11 -0.100008 -0 -0 -2.3e-05</pose>
+          <pose frame=''>-1.25 -7 -0.100008 -0 -0 -2.3e-05</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 -9.81 0 -0 0</acceleration>
           <wrench>0 0 -9.81 0 -0 0</wrench>
