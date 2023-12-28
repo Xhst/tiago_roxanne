@@ -14,7 +14,9 @@ At the end of the configuraiton there's a workspace named ``ws`` and it should b
 
 ### roxanne_rosjava_msgs Package
 Since tiago_roxanne uses **ROXANNE messages** to communicate with the planner it's necessary that it can access the **roxanne_rosjava_msg** package, to do so, copy the folder corresponding to the package inside the ``tiago_public_ws`` folder.
-Comment, with ``#``, or remove in the ``CMakeLists.txt`` file the line ``catkin_rosjava_setup()`` then run catkin build roxanne_rosjava_msgs from ``tiago_public_ws``.
+
+In the ``CMakeLists.txt`` file, comment, with ``#``, or remove the line ``catkin_rosjava_setup()``.
+
 Then build the package from ``tiago_public_ws`` with ``catkin build roxanne_rosjava_msgs``.
 
 ### tiago_roxanne package
