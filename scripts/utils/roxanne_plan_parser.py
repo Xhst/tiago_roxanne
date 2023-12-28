@@ -4,9 +4,9 @@ from roxanne_rosjava_msgs.msg import ActingGoal, Token
 
 class RoxannePlanParser:
 
-    def __init__(self, plan_file):
+    def __init__(self, plan_file, max_time = 5000):
         self.plan_file = plan_file
-        self.MAX_TIME = 10000
+        self.max_time = max_time
         
 
     def parse(self):
@@ -57,8 +57,8 @@ class RoxannePlanParser:
         for parameter in data_token.get('parameters', []):
             token.parameters.append(str(parameter))
 
-        token.start = data_token.get('start', [0, self.MAX_TIME])
-        token.end = data_token.get('end', [0, self.MAX_TIME])
-        token.duration = data_token.get('duration', [1, self.MAX_TIME])
+        token.start = data_token.get('start', [0, self.max_time])
+        token.end = data_token.get('end', [0, self.max_time])
+        token.duration = data_token.get('duration', [1, self.max_time])
 
         return token
