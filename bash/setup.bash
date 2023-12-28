@@ -1,6 +1,6 @@
 #!/bin/bash 
 
-WORLD="prova"
+WORLD="3table"
 END_EFFECTOR="pal-hey5" # pal-gripper , pal-hey5
 USE_ROXANNE=true
 
