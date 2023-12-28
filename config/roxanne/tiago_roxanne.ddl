@@ -1,16 +1,17 @@
-DOMAIN TIAGO_HRC {
+DOMAIN tiago_roxanne {
 
     /**
      * [0, 1500] -> min and max time of execution of the whole domain.
      * 1000 -> time slots (unused)
      */ 
-    TEMPORAL_MODULE temporal_module = [0, 10000], 1000;
+    TEMPORAL_MODULE temporal_module = [0, 5000], 1000;
 
     // Enumerators
 
     PAR_TYPE EnumerationParameterType location = {
         home,
         starting_point,
+        table_0,
         table_1,
         table_2
     };
@@ -67,16 +68,16 @@ DOMAIN TIAGO_HRC {
          * _MovingTo is the state of the robot when it's moving.
          * Moves to 'dest_location'.
          * 
-         * Duration: 1 to 300 time units
+         * Duration: 1 to 100 time units
          * Adjacent states: At
          * Constraints: end location must be equal to destination.
          */
-		VALUE _MovingTo(?dest_location) [1, 300] // States that starts with '_' are partially controllable.
+		VALUE _MovingTo(?dest_location) [1, 100] // States that starts with '_' are partially controllable.
 		MEETS {
 			At(?location);
             
             // location constraint
-			//?location = ?dest_location;
+			?location = ?dest_location;
 		}
     }
 
@@ -102,7 +103,7 @@ DOMAIN TIAGO_HRC {
          * The vertical destination position of the head is 'to_v_pos'.
          * 
          * Duration: 1 to 5 time units
-         * Adjacent states: LookingAt
+         * Adjacent states: Idle
          */
         VALUE Moving(?to_h_pos, ?to_v_pos) [1, 5]
         MEETS {
@@ -130,10 +131,10 @@ DOMAIN TIAGO_HRC {
          * Moving is the state in which the torso is lifting or lowering.
          * The destination height is 'pos'.
          * 
-         * Duration: 1 to 15 time units
+         * Duration: 1 to 10 time units
          * Adjacent states: Idle
          */
-        VALUE Moving(?pos) [1, 15]
+        VALUE Moving(?pos) [1, 10]
         MEETS {
             Idle();
         }
@@ -181,22 +182,22 @@ DOMAIN TIAGO_HRC {
          * Playing is the state in which the robot is executing a predefined motion.
          * Executing the 'motion' motion.
          * 
-         * Duration: 1 to 10 time units
+         * Duration: 5 to 30 time units
          * Adjacent states: Idle
          */
-        VALUE Playing(?motion) [1, 10]
+        VALUE Playing(?motion) [5, 30]
         MEETS {
             Idle();
         }
     }
 
-    COMP_TYPE SingletonStateVariable RobotController(Idle(), GoHome(), MoveTo(location), Operation(location, motion)) {
+    COMP_TYPE SingletonStateVariable Robot(Idle(), Home(), MoveTo(location), Operation(location, motion)) {
 
         VALUE Idle() [1, +INF]
         MEETS {
             MoveTo(?to);
             Operation(?location, ?motion);
-            GoHome();
+            Home();
         }
 
         VALUE MoveTo(?to) [1, +INF]
@@ -209,13 +210,13 @@ DOMAIN TIAGO_HRC {
             Idle();
         }
 
-        VALUE GoHome() [1, +INF]
+        VALUE Home() [1, +INF]
         MEETS {
             Idle();
         }
     }
 
-    COMP_TYPE SingletonStateVariable GuestController(None(), Arrive(location), Leave(location)) {
+    COMP_TYPE SingletonStateVariable Guest(None(), Arrive(location), Leave(location)) {
 
         VALUE None() [0, +INF]
         MEETS {
@@ -236,44 +237,47 @@ DOMAIN TIAGO_HRC {
 
     // Components 
 
-    COMPONENT base        {FLEXIBLE positions(primitive)} : BaseController;
-    COMPONENT head        {FLEXIBLE head_goals(primitive)} : HeadController;
+    COMPONENT base        {FLEXIBLE positions(primitive)}   : BaseController;
+    COMPONENT head        {FLEXIBLE head_goals(primitive)}  : HeadController;
     COMPONENT torso       {FLEXIBLE torso_goals(primitive)} : TorsoController;
     COMPONENT grasp       {FLEXIBLE grasp_goals(primitive)} : GraspController;
-    COMPONENT play_motion {FLEXIBLE pm_goals(primitive)} : PlayMotionController;
-    COMPONENT robot       {FLEXIBLE robot_goals(primitive)} : RobotController;
-    COMPONENT guest       {FLEXIBLE arrivals(functional)} : GuestController;
+    COMPONENT play_motion {FLEXIBLE pm_goals(primitive)}    : PlayMotionController;
+    COMPONENT robot       {FLEXIBLE robot_goals(primitive)} : Robot;
+    COMPONENT guest       {FLEXIBLE behavior(functional)}   : Guest;
 
-    SYNCHRONIZE guest.arrivals {
+
+    SYNCHRONIZE guest.behavior {
         VALUE Arrive(?location) {
-            d0 <!> robot.robot_goals.Operation(?loc, ?motion);
-            d1 robot.robot_goals.GoHome();
+            d1 robot.robot_goals.Operation(?loc, ?mot);
 
-            d0 BEFORE [0, +INF] d1;
+            BEFORE [0, +INF] d1;
 
-            BEFORE [0, +INF] d0;
-
-            ?motion = wave;
             ?loc = ?location;
+            ?mot = shake_hands;
         }
 
         VALUE Leave(?location) {
-            d0 <!> robot.robot_goals.Operation(?loc, ?motion);
-            d1 robot.robot_goals.GoHome();
-
-            d0 BEFORE [0, +INF] d1;
+            d1 robot.robot_goals.Operation(?loc, ?mot);
             
-            BEFORE [0, +INF] d0;
+            BEFORE [0, +INF] d1;
 
-            ?motion = shake_hands;
             ?loc = ?location;
+            ?mot = wave;
         }
     }
 
     SYNCHRONIZE robot.robot_goals {
 
+        VALUE Home() {
+            d0 <!> base.positions.At(?l0);
+
+            CONTAINS [0, +INF] [0, +INF] d0;
+
+            ?l0 = home;
+        }
+
         VALUE MoveTo(?location) {
-		    d0 <!> base.positions._MovingTo(?l0);
+		    d0 <!> base.positions.At(?l0);
 
             CONTAINS [0, +INF] [0, +INF] d0;
 
@@ -281,24 +285,31 @@ DOMAIN TIAGO_HRC {
 		}
 
         VALUE Operation(?location, ?motion) {
-            d1 <!> base.positions._MovingTo(?l1);
-            d2 play_motion.pm_goals.Playing(?m0);
-
-            CONTAINS [0, +INF] [0, +INF] d1;
-            CONTAINS [0, +INF] [0, +INF] d2;
-
-            d1 BEFORE [0, +INF] d2;
-
-            ?l1 = ?location;
-            ?m0 = ?motion;
-        }
-
-        VALUE GoHome() {
-            d0 <!> base.positions._MovingTo(?l0);
+            d0 <!> base.positions.At(?loc);
+            d1 base.positions.At(?loc);
+            d2 play_motion.pm_goals.Playing(?mot);
+            d3 play_motion.pm_goals.Playing(?home_mot);
+            d4 <!> base.positions.At(?home);
 
             CONTAINS [0, +INF] [0, +INF] d0;
+            CONTAINS [0, +INF] [0, +INF] d1;
+            CONTAINS [0, +INF] [0, +INF] d2;
+            CONTAINS [0, +INF] [0, +INF] d3;
 
-            ?l0 = home;
+            d2 DURING [0, +INF] [0, +INF] d1;
+            d3 DURING [0, +INF] [0, +INF] d1;
+
+            d0 BEFORE [0, +INF] d2;
+            d2 BEFORE [0, +INF] d3;
+            d3 BEFORE [0, +INF] d4;
+
+            MEETS d4;
+
+            ?loc = ?location;
+            ?mot = ?motion;
+
+            ?home_mot = home;
+            ?home = home;
         }
     }
 

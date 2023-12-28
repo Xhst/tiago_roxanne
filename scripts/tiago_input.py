@@ -21,7 +21,7 @@ class TiagoInput:
         self.publisher_suffix = '_cmd'
 
         # path with workspace as root
-        self.commands_json_path = './src/tiago_hrc/config/commands.json'
+        self.commands_json_path = './src/tiago_roxanne/config/commands.json'
 
         self.publishers_name = ['head', 'base', 'torso', 'play_motion', 'tts', 'grasp']
         self.publishers = {}

@@ -6,7 +6,7 @@ from actionlib import SimpleActionClient
 from std_msgs.msg import String
 from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 from roxanne_rosjava_msgs.msg import TokenExecution, TokenExecutionFeedback
-from tiago_hrc.srv import Position
+from tiago_roxanne.srv import Position
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
@@ -77,22 +77,25 @@ class TiagoBaseController:
 
     
     def roxanne_execution_callback(self, execution):
-        rospy.loginfo(execution)
-        if execution.token.component == 'base':
+        try:
+            rospy.loginfo(execution)
+            if execution.token.component == 'base':
 
-            if execution.token.predicate == '_MovingTo' and len(execution.token.parameters) == 1:
+                if execution.token.predicate == '_MovingTo' and len(execution.token.parameters) == 1:
 
-                response = self.position_service(str(execution.token.parameters[0]))
-                
-                pose_stamped = posestamped_from_xy_and_cardinal_point(
-                    response.x,
-                    response.y,
-                    response.cardinal_point
-                )
+                    response = self.position_service(str(execution.token.parameters[0]))
+                    
+                    pose_stamped = posestamped_from_xy_and_cardinal_point(
+                        response.x,
+                        response.y,
+                        response.cardinal_point
+                    )
 
-                result = self.move_to(pose_stamped)
-                
-                self.send_roxanne_feedback(int(not result), execution.tokenId)
+                    result = self.move_to(pose_stamped)
+                    
+                    self.send_roxanne_feedback(int(not result), execution.tokenId)
+        except rospy.ServiceException as exc:
+            rospy.logwarn("Service did not process request: " + str(exc))
 
 
     def send_roxanne_feedback(self, code, id):

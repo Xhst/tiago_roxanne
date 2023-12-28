@@ -2,7 +2,7 @@
 import os
 import stat
 import rospy
-from tiago_hrc.srv import permission, permissionResponse
+from tiago_roxanne.srv import permission, permissionResponse
 
 
 def callback(request):

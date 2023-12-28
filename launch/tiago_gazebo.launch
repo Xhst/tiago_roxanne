@@ -22,7 +22,7 @@
   <arg name="advanced_grasping" default="false"/> <!-- Requires extra software from PAL Robotics --> 
 
   <!-- start up world -->
-  <include file="$(find tiago_hrc)/launch/world_gazebo.launch">
+  <include file="$(find tiago_roxanne)/launch/world_gazebo.launch">
     <arg name="world"                   value="$(arg world)"/>
     <arg name="gui"                     value="$(arg gui)"/>
     <arg name="debug"                   value="$(arg debug)"/>

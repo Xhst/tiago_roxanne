@@ -2,7 +2,7 @@
 import rospy
 import sys
 import os
-from tiago_hrc.srv import ModelPose
+from tiago_roxanne.srv import ModelPose
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 

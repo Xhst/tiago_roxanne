@@ -1,4 +1,4 @@
-cd ./src/tiago_hrc
+cd ./src/tiago_roxanne
 
 chmod +x ./*
 chmod +x ./srv/*

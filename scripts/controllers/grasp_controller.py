@@ -5,7 +5,7 @@ import os
 from actionlib import SimpleActionClient
 from std_msgs.msg import String
 from moveit_msgs.msg import PickupAction, PlaceAction
-from tiago_hrc.srv import ModelPose
+from tiago_roxanne.srv import ModelPose
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 

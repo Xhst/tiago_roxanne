@@ -22,7 +22,7 @@
   <arg name="global_planner" default="global_planner"/>
   <arg name="local_planner"  default="$(eval 'teb' if (arg('public_sim') or arg('base_type')=='omni_base') else 'pal')"/>
   <arg name="localization"   default="amcl"/>
-  <arg name="map"            default="$(find tiago_hrc)/config/navigation/maps/$(arg world)/"/>
+  <arg name="map"            default="$(find tiago_roxanne)/config/navigation/maps/$(arg world)/"/>
 
   <arg name="advanced_grasping"     default="false"/> <!-- Requires extra software from PAL Robotics -->
   <arg name="advanced_navigation"   default="false"/> <!-- Requires extra software from PAL Robotics-->
@@ -30,7 +30,7 @@
   <env name="LC_NUMERIC" value="C" />
   <env name="PAL_HOST" value="tiago" />
   
-  <include file="$(find tiago_hrc)/launch/tiago_gazebo.launch">
+  <include file="$(find tiago_roxanne)/launch/tiago_gazebo.launch">
     <arg name="world"                   value="$(arg world)"/>
     <arg name="gui"                     value="$(arg gui)"/>
     <arg name="debug"                   value="$(arg debug)"/>
@@ -73,23 +73,23 @@
   <param name="use_roxanne" value="$(arg use_roxanne)" />
   <param name="use_model_pose_service" value="$(arg use_model_pose_service)" />
 
-  <rosparam command="load" file="$(find tiago_hrc)/config/pick_motions.yaml" />
-  <rosparam command="load" file="$(find tiago_hrc)/config/pick_and_place_params.yaml" />
-  <rosparam command="load" file="$(find tiago_hrc)/config/tts_params.yaml" />
+  <rosparam command="load" file="$(find tiago_roxanne)/config/pick_motions.yaml" />
+  <rosparam command="load" file="$(find tiago_roxanne)/config/pick_and_place_params.yaml" />
+  <rosparam command="load" file="$(find tiago_roxanne)/config/tts_params.yaml" />
 
   <group if="$(arg rviz)">
-      <node name="pick_demo_rviz" pkg="rviz" type="rviz" args="-d $(find tiago_hrc)/config/rviz/tiago_pick_demo.rviz" />
+      <node name="pick_demo_rviz" pkg="rviz" type="rviz" args="-d $(find tiago_roxanne)/config/rviz/tiago_pick_demo.rviz" />
   </group>
 
-  <node pkg="tiago_hrc" name="model_pose_service" type="model_pose_service.py" args="$(find tiago_hrc)/worlds/$(arg world).world"/>
-  <node pkg="tiago_hrc" name="position_service" type="position_service.py"/>
+  <node pkg="tiago_roxanne" name="model_pose_service" type="model_pose_service.py" args="$(find tiago_roxanne)/worlds/$(arg world).world"/>
+  <node pkg="tiago_roxanne" name="position_service" type="position_service.py"/>
 
-  <node pkg="tiago_hrc" name="tiago_robot" type="tiago_robot.py"/>
-  <node pkg="tiago_hrc" name="base_controller" type="base_controller.py"/>
-  <node pkg="tiago_hrc" name="head_controller" type="head_controller.py"/>
-  <node pkg="tiago_hrc" name="torso_controller" type="torso_controller.py"/>
-  <node pkg="tiago_hrc" name="tts_controller" type="tts_controller.py"/>
-  <node pkg="tiago_hrc" name="play_motion_controller" type="play_motion_controller.py"/>
-  <node pkg="tiago_hrc" name="grasp_controller" type="grasp_controller.py"/>
+  <node pkg="tiago_roxanne" name="tiago_robot" type="tiago_robot.py"/>
+  <node pkg="tiago_roxanne" name="base_controller" type="base_controller.py"/>
+  <node pkg="tiago_roxanne" name="head_controller" type="head_controller.py"/>
+  <node pkg="tiago_roxanne" name="torso_controller" type="torso_controller.py"/>
+  <node pkg="tiago_roxanne" name="tts_controller" type="tts_controller.py"/>
+  <node pkg="tiago_roxanne" name="play_motion_controller" type="play_motion_controller.py"/>
+  <node pkg="tiago_roxanne" name="grasp_controller" type="grasp_controller.py"/>
 
 </launch>

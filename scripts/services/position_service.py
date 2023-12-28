@@ -3,7 +3,7 @@ import rospy
 import sys
 import os
 import json
-from tiago_hrc.srv import Position
+from tiago_roxanne.srv import Position
 
 class PositionService():
     def __init__(self, json_data):

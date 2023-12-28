@@ -11,12 +11,12 @@ class TiagoRobot:
 
         # 'pkg' and 'name' are required
         self.nodes = [
-            {'pkg':'tiago_hrc', 'name':'head_controller', 'namespace':'controllers'},
-            {'pkg':'tiago_hrc', 'name':'base_controller', 'namespace':'controllers'},
-            {'pkg':'tiago_hrc', 'name':'torso_controller', 'namespace':'controllers', 'sleep':15},
-            {'pkg':'tiago_hrc', 'name':'tts_controller', 'namespace':'controllers', 'sleep':15},
-            {'pkg':'tiago_hrc', 'name':'play_motion_controller', 'namespace':'controllers', 'sleep':15},
-            {'pkg':'tiago_hrc', 'name':'grasp_controller', 'namespace':'controllers'},
+            {'pkg':'tiago_roxanne', 'name':'head_controller', 'namespace':'controllers'},
+            {'pkg':'tiago_roxanne', 'name':'base_controller', 'namespace':'controllers'},
+            {'pkg':'tiago_roxanne', 'name':'torso_controller', 'namespace':'controllers', 'sleep':15},
+            {'pkg':'tiago_roxanne', 'name':'tts_controller', 'namespace':'controllers', 'sleep':15},
+            {'pkg':'tiago_roxanne', 'name':'play_motion_controller', 'namespace':'controllers', 'sleep':15},
+            {'pkg':'tiago_roxanne', 'name':'grasp_controller', 'namespace':'controllers'},
         ]
 
 
