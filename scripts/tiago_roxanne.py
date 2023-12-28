@@ -52,7 +52,7 @@ class TiagoRoxanne:
 
 if __name__ == '__main__':
     try:
-        tiago_input = TiagoRoxanne('test_plan2.json')
+        tiago_input = TiagoRoxanne('1table_1user.json', 'agent_dfs.properties')
         tiago_input.start()
     except rospy.ROSInterruptException:
         pass
