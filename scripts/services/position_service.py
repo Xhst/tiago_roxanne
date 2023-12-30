@@ -22,7 +22,7 @@ class PositionService():
 
     def start(self):
         rospy.init_node('position_service')
-        rospy.Service('position_service', Position, self.handler)
+        rospy.Service('/tiago_roxanne/position_service', Position, self.handler)
         rospy.loginfo('Service "position_service" started')
         rospy.spin()
 

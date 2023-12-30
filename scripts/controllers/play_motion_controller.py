@@ -69,7 +69,7 @@ class TiagoTTSController:
         self.client = actionlib.SimpleActionClient('/play_motion', PlayMotionAction)
         rospy.loginfo("Succesfully connected.")
     
-        rospy.Subscriber('play_motion_cmd', String, self.command_callback)
+        rospy.Subscriber('/tiago_roxanne/cmd/play_motion', String, self.command_callback)
 
         rospy.wait_for_message("joint_states", JointState)
 

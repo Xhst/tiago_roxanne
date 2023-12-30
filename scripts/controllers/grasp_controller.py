@@ -98,9 +98,9 @@ class TiagoGraspController:
         rospy.init_node(self.node_name, anonymous=False)
         rospy.loginfo('Node %s started', self.node_name)
 
-        rospy.Subscriber('grasp_cmd', String, self.callback)
+        rospy.Subscriber('/tiago_roxanne/cmd/grasp', String, self.callback)
 
-        self.play_motion_pub = rospy.Publisher('play_motion_cmd', String, queue_size=3)
+        self.play_motion_pub = rospy.Publisher('/tiago/roxanne/cmd/play_motion', String, queue_size=3)
 
         self.connect_model_pose_service()
         self.connect_pickup_and_place_action_servers()

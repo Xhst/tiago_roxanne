@@ -73,8 +73,8 @@ class TiagoHeadController:
     def start(self):
         rospy.init_node(self.node_name, anonymous=False)
         rospy.loginfo('Node %s started', self.node_name)
-        self.publisher = rospy.Publisher('/head_controller/command', JointTrajectory, queue_size=3)
-        rospy.Subscriber('head_cmd', String, self.command_callback)
+        self.publisher = rospy.Publisher('/tiago_roxanne/command/head_controller', JointTrajectory, queue_size=3)
+        rospy.Subscriber('/tiago_roxanne/cmd/head', String, self.command_callback)
 
         self.connect_roxanne_nodes()
 

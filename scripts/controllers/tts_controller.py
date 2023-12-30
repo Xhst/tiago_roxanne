@@ -38,7 +38,7 @@ class TiagoTTSController:
         self.client.wait_for_server()
         rospy.loginfo("Succesfully connected.")
 
-        rospy.Subscriber('tts_cmd', String, self.callback)
+        rospy.Subscriber('/tiago_roxanne/cmd/tts', String, self.callback)
         rospy.spin()
 
     

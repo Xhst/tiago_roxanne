@@ -18,7 +18,7 @@ class TiagoInput:
         self.node_name = 'tiago_input'
         self.log_level = rospy.INFO
         
-        self.publisher_suffix = '_cmd'
+        self.publisher_prefix = '/tiago_roxanne/cmd/'
 
         # path with workspace as root
         self.commands_json_path = './src/tiago_roxanne/config/commands.json'
@@ -30,7 +30,7 @@ class TiagoInput:
 
     def start_publishers(self):
         for name in self.publishers_name:
-            self.publishers[name] = rospy.Publisher(name + self.publisher_suffix, String, queue_size=3)
+            self.publishers[name] = rospy.Publisher(self.publisher_prefix + name, String, queue_size=3)
 
 
     def load_commands(self):

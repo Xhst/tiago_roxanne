@@ -118,7 +118,7 @@ class TiagoBaseController:
 
     def connect_position_service(self):
         rospy.loginfo('Connecting to position_service.')
-        self.position_service = rospy.ServiceProxy('position_service', Position)
+        self.position_service = rospy.ServiceProxy('/tiago_roxanne/position_service', Position)
         self.position_service.wait_for_service()
         rospy.loginfo('Succesfully connected.')
 
@@ -135,7 +135,7 @@ class TiagoBaseController:
         self.client.wait_for_server()
         rospy.loginfo('Succesfully connected.')
 
-        rospy.Subscriber('base_cmd', String, self.command_callback)
+        rospy.Subscriber('/tiago_roxanne/cmd/base', String, self.command_callback)
 
         rospy.spin()
         

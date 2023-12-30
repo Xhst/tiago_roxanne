@@ -73,8 +73,8 @@ class TiagoTorsoController:
     def start(self):
         rospy.init_node(self.node_name, anonymous=False)
         rospy.loginfo('Node %s started', self.node_name)
-        self.publisher = rospy.Publisher('/torso_controller/command', JointTrajectory, queue_size=3)
-        rospy.Subscriber('torso_cmd', String, self.command_callback)
+        self.publisher = rospy.Publisher('/tiago_roxanne/command/torso_controller', JointTrajectory, queue_size=3)
+        rospy.Subscriber('/tiago_roxanne/cmd/torso', String, self.command_callback)
 
         self.connect_roxanne_nodes()
 

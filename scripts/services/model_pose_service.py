@@ -39,7 +39,7 @@ class ModelPoseService:
 
     def start(self):
         rospy.init_node('model_pose_service')
-        rospy.Service('model_pose', ModelPose, self.handler)
+        rospy.Service('/tiago_roxanne/model_pose', ModelPose, self.handler)
         rospy.loginfo('Service "model_pose_service" started')
         rospy.spin()
 

@@ -20,7 +20,7 @@ def callback(request):
 
 def start():
     rospy.init_node('permission_service')
-    rospy.Service("permission", permission, callback)
+    rospy.Service("/tiago_roxanne/permission", permission, callback)
     rospy.loginfo('Service "permission_service" started')
     rospy.spin()
 
