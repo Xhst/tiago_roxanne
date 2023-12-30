@@ -6,7 +6,7 @@ from actionlib import SimpleActionClient
 from std_msgs.msg import String
 from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 from roxanne_rosjava_msgs.msg import TokenExecution, TokenExecutionFeedback
-from tiago_roxanne.msg import TimerRequest
+from tiago_roxanne.msg import TimerToken
 from tiago_roxanne.srv import Position
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
@@ -78,7 +78,7 @@ class TiagoBaseController:
 
     
     def send_timer_request(self, execution, is_pending = True):
-        timer_req = TimerRequest()
+        timer_req = TimerToken()
         timer_req.execution = execution
         timer_req.is_pending = is_pending
 
@@ -141,6 +141,8 @@ class TiagoBaseController:
         rospy.init_node(self.node_name, anonymous=False)
         rospy.loginfo('Node %s started', self.node_name)
 
+        self.timer_publisher = rospy.Publisher('/tiago_roxanne/timer/token_execution', TimerToken, queue_size=1)
+        
         self.connect_roxanne_nodes()
         self.connect_position_service()
 
@@ -150,8 +152,6 @@ class TiagoBaseController:
         rospy.loginfo('Succesfully connected.')
 
         rospy.Subscriber('/tiago_roxanne/cmd/base', String, self.command_callback)
-
-        self.timer_publisher = rospy.Publisher('/tiago_roxanne/timer/token_execution', TimerRequest, queue_size=1)
 
         rospy.spin()
         

@@ -5,7 +5,7 @@ from std_msgs.msg import String
 from sensor_msgs.msg import JointState
 from play_motion_msgs.msg import PlayMotionAction, PlayMotionGoal
 from roxanne_rosjava_msgs.msg import TokenExecution, TokenExecutionFeedback
-from tiago_roxanne.msg import TimerRequest
+from tiago_roxanne.msg import TimerToken
 
 class TiagoTTSController:
 
@@ -34,7 +34,7 @@ class TiagoTTSController:
 
 
     def send_timer_request(self, execution, is_pending = True):
-        timer_req = TimerRequest()
+        timer_req = TimerToken()
         timer_req.execution = execution
         timer_req.is_pending = is_pending
 
@@ -86,6 +86,8 @@ class TiagoTTSController:
 
         rospy.wait_for_message("joint_states", JointState)
 
+        self.timer_publisher = rospy.Publisher('/tiago_roxanne/timer/token_execution', TimerToken, queue_size=1)
+        
         self.connect_roxanne_nodes()
         
         rospy.spin()

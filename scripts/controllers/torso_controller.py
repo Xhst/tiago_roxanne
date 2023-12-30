@@ -3,7 +3,7 @@ import rospy
 from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 from roxanne_rosjava_msgs.msg import TokenExecution, TokenExecutionFeedback
 from std_msgs.msg import String
-from tiago_roxanne.msg import TimerRequest
+from tiago_roxanne.msg import TimerToken
 
 
 class TiagoTorsoController:
@@ -39,7 +39,7 @@ class TiagoTorsoController:
 
 
     def send_timer_request(self, execution, is_pending = True):
-        timer_req = TimerRequest()
+        timer_req = TimerToken()
         timer_req.execution = execution
         timer_req.is_pending = is_pending
 
@@ -89,6 +89,8 @@ class TiagoTorsoController:
         self.publisher = rospy.Publisher('/torso_controller/command', JointTrajectory, queue_size=3)
         rospy.Subscriber('/tiago_roxanne/cmd/torso', String, self.command_callback)
 
+        self.timer_publisher = rospy.Publisher('/tiago_roxanne/timer/token_execution', TimerToken, queue_size=1)
+        
         self.connect_roxanne_nodes()
 
         rospy.spin()  

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import rospy
 import os
-from tiago_roxanne.msg import TimerRequest
+from tiago_roxanne.msg import TimerToken
 
 class TimerResult():
 
@@ -9,48 +9,52 @@ class TimerResult():
         self.node_name = 'result_log'
         self.log_level = rospy.INFO
 
-        self.file_path = os.path.dirname(__file__) + '/../../results/log.txt'
+        self.file_path = os.path.dirname(__file__) + '/../results/log.txt'
 
-        self.pending_token = dict()
+        self.pending_tokens = dict()
         self.first_token_time = None
 
         self.is_working = False
 
 
-
     def has_pending_token(self):
-        return len(self.pendig_token) > 0
+        return len(self.pending_tokens) > 0
     
-    def new_token_execution(self, exec):
-        token = exec.token
-        self.pending_token[token.id] = rospy.get_time()
+
+    def new_token_execution(self, execution):
+        token = execution.token
+
+        rospy.loginfo("Received execution for token with id "+ str(token.id)) +" ("+ token.component + "." + token.predicate +")"
+        self.pending_tokens[token.id] = rospy.get_time()
 
         if not self.is_working:
             self.is_working = True
             self.first_token_time = rospy.get_time()
 
 
-    def token_execution_finished(self, exec):
-        token = exec.token
-        exec_time = self.pending_token[token.id] - rospy.get_time()
+    def token_execution_finished(self, execution):
+        token = execution.token
+        exec_time = rospy.get_time() - self.pending_tokens[token.id]
 
-        del self.pending_token[token.id]
+        del self.pending_tokens[token.id]
 
         self.log_token(token, exec_time)
 
-        if self.is_working and not self.has_pending_token() and len(exec.next) == 0:
+        if self.is_working and not self.has_pending_token() and len(execution.next) == 0:
             self.is_working = False
-            self.log_total_exec_time(self.first_token_time - rospy.get_time())
+            self.log_total_exec_time(rospy.get_time() - self.first_token_time)
 
 
     def log_token(self, token, exec_time):
+        rospy.loginfo("Loggin token "+ str(token.id) +" ("+ token.component + "." + token.predicate +"), exec time: "+ str(exec_time))
+        
         file = open(self.file_path, "a")
 
-        file.write("token id: " + token.id + os.linesep)
+        file.write("token id: " + str(token.id) + os.linesep)
         file.write("token component: " + token.component + os.linesep)
         file.write("token predicate: " + token.predicate + os.linesep)
-        file.write("token parameter: " + token.parameter + os.linesep)
-        file.write("token execution time: " + exec_time + os.linesep)
+        file.write("token parameters: " + str(token.parameters) + os.linesep)
+        file.write("token execution time: " + str(exec_time) + os.linesep)
         file.write("___________________" + os.linesep)
 
         file.close()
@@ -59,7 +63,7 @@ class TimerResult():
     def log_total_exec_time(self, exec_time):
         file = open(self.file_path, "a")
 
-        file.write("total execution time: " + exec_time + os.linesep)
+        file.write("total execution time: " + str(exec_time) + os.linesep)
 
         file.close()
         
@@ -75,7 +79,11 @@ class TimerResult():
     def start(self):
         rospy.init_node(self.node_name, anonymous=False, log_level=self.log_level)
 
-        rospy.Subscriber("/tiago_roxanne/timer/token_execution" , TimerRequest, self.callback)
+        rospy.loginfo('Starting TimerResult node.')
+
+        rospy.Subscriber("/tiago_roxanne/timer/token_execution" , TimerToken, self.callback)
+
+        rospy.loginfo('TimerResult node started.')
 
         rospy.spin()
 
