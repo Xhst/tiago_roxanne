@@ -6,6 +6,7 @@ from actionlib import SimpleActionClient
 from std_msgs.msg import String
 from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 from roxanne_rosjava_msgs.msg import TokenExecution, TokenExecutionFeedback
+from tiago_roxanne.msg import TimerRequest
 from tiago_roxanne.srv import Position
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
@@ -76,10 +77,20 @@ class TiagoBaseController:
             self.move_to_model(data)
 
     
+    def send_timer_request(self, execution, is_pending = True):
+        timer_req = TimerRequest()
+        timer_req.execution = execution
+        timer_req.is_pending = is_pending
+
+        self.timer_publisher.publish(timer_req)
+
+    
     def roxanne_execution_callback(self, execution):
         try:
             rospy.loginfo(execution)
             if execution.token.component == 'base':
+
+                self.send_timer_request(execution)
 
                 if execution.token.predicate == '_MovingTo' and len(execution.token.parameters) == 1:
 
@@ -94,6 +105,9 @@ class TiagoBaseController:
                     result = self.move_to(pose_stamped)
                     
                     self.send_roxanne_feedback(int(not result), execution.tokenId)
+            
+            self.send_timer_request(execution, False)
+            
         except rospy.ServiceException as exc:
             rospy.logwarn("Service did not process request: " + str(exc))
 
@@ -136,6 +150,8 @@ class TiagoBaseController:
         rospy.loginfo('Succesfully connected.')
 
         rospy.Subscriber('/tiago_roxanne/cmd/base', String, self.command_callback)
+
+        self.timer_publisher = rospy.Publisher('/tiago_roxanne/timer/token_execution', TimerRequest, queue_size=1)
 
         rospy.spin()
         
