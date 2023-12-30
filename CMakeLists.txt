@@ -19,6 +19,7 @@ find_package(catkin REQUIRED COMPONENTS
     geometry_msgs
     pal_interaction_msgs
     moveit_msgs
+    roxanne_rosjava_msgs
 )  
 
 ## Generate messages in the 'msg' folder
@@ -47,20 +48,21 @@ generate_messages(
     DEPENDENCIES
     std_msgs  
     geometry_msgs
+    roxanne_rosjava_msgs
 )
 
 catkin_package(
-    CATKIN_DEPENDS roxanne_rosjava_msgs
-#  INCLUDE_DIRS include
-#  LIBRARIES tiago_hrc
-#  CATKIN_DEPENDS other_catkin_pkg
-#  DEPENDS system_lib
+    CATKIN_DEPENDS 
+    message_runtime 
+    roxanne_rosjava_msgs
 )
+
 
 catkin_install_python(PROGRAMS 
     scripts/tiago_robot.py 
     scripts/tiago_input.py 
-    scripts/tiago_roxanne.py 
+    scripts/timer_result.py
+    scripts/tiago_roxanne_start.py 
     scripts/services/position_service.py 
     scripts/services/model_pose_service.py 
     scripts/services/permission_service.py
