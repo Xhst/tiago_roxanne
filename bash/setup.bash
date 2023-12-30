@@ -10,5 +10,5 @@ gnome-terminal --tab --title='tiago_gazebo' -e "bash -c 'cd; cd tiago_public_ws;
 
 if $USE_ROXANNE
 then
-    gnome-terminal --tab --title='roxanne' -e "bash -c 'sleep 40s; cd; cd tiago_public_ws; source ./devel/setup.bash; ./src/tiago_roxanne/bash/roxanne.bash; exec bash -i'" --tab --title='tiago_roxanne' -e "bash -c 'sleep 60s; cd; cd tiago_public_ws; source ./devel/setup.bash; rosrun tiago_roxanne tiago_roxanne.py; exec bash -i'" &>/dev/null
+    gnome-terminal --tab --title='roxanne' -e "bash -c 'sleep 40s; cd; cd tiago_public_ws; source ./devel/setup.bash; ./src/tiago_roxanne/bash/roxanne.bash; exec bash -i'" --tab --title='tiago_roxanne' -e "bash -c 'sleep 60s; cd; cd tiago_public_ws; source ./devel/setup.bash; rosrun tiago_roxanne tiago_roxanne_start.py; exec bash -i'" &>/dev/null
 fi
