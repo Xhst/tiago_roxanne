@@ -19,6 +19,11 @@ In the ``CMakeLists.txt`` file, comment, with ``#``, or remove the line ``catkin
 
 Then build the package from ``tiago_public_ws`` with ``catkin build roxanne_rosjava_msgs``.
 
+```
+~/tiago_public_ws
+catkin build roxanne_rosjava_msgs
+```
+
 ### tiago_roxanne Package
 At this point configure the **tiago_roxanne** package in the ``tiago_public_ws`` workspace by cloning this repository.
 ```
@@ -29,7 +34,7 @@ git clone https://github.com/Xhst/tiago_roxanne.git
 ```
 And then by building the package.
 ```
-cd ~/tiago_public_ws/
+cd ~/tiago_public_ws
 catkin build tiago_roxanne
 ```
 
