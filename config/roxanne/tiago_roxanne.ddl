@@ -1,9 +1,5 @@
 DOMAIN tiago_roxanne {
 
-    /**
-     * [0, 1500] -> min and max time of execution of the whole domain.
-     * 1000 -> time slots (unused)
-     */ 
     TEMPORAL_MODULE temporal_module = [0, 5000], 1000;
 
     // Enumerators
@@ -135,28 +131,6 @@ DOMAIN tiago_roxanne {
          * Adjacent states: Idle
          */
         VALUE Moving(?pos) [1, 10]
-        MEETS {
-            Idle();
-        }
-    }
-
-    /**
-     * Definition of the component GraspController used for picking and placing objects.
-     */
-    COMP_TYPE SingletonStateVariable GraspController(Idle(), Picking(), Placing()) {
-
-        VALUE Idle() [1, +INF]
-        MEETS {
-            Picking();
-            Placing();
-        }
-
-        VALUE Picking() [1, 30]
-        MEETS {
-            Idle();
-        }
-
-        VALUE Placing() [1, 30]
         MEETS {
             Idle();
         }
