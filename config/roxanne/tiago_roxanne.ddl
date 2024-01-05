@@ -285,23 +285,21 @@ DOMAIN tiago_roxanne {
 		}
 
         VALUE Operation(?location, ?motion) {
-            d0 <!> base.positions.At(?loc);
+            d0 <!> base.positions._MovingTo(?loc);
             d1 base.positions.At(?loc);
             d2 play_motion.pm_goals.Playing(?mot);
             d3 play_motion.pm_goals.Playing(?home_mot);
-            d4 <!> base.positions.At(?home);
+            d4 <!> base.positions._MovingTo(?home);
 
             CONTAINS [0, +INF] [0, +INF] d0;
             CONTAINS [0, +INF] [0, +INF] d1;
             CONTAINS [0, +INF] [0, +INF] d2;
             CONTAINS [0, +INF] [0, +INF] d3;
 
+            d0 BEFORE [0, +INF] d1;
+
             d2 DURING [0, +INF] [0, +INF] d1;
             d3 DURING [0, +INF] [0, +INF] d1;
-
-            d0 BEFORE [0, +INF] d2;
-            d2 BEFORE [0, +INF] d3;
-            d3 BEFORE [0, +INF] d4;
 
             MEETS d4;
 
