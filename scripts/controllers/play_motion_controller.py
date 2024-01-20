@@ -15,7 +15,7 @@ class TiagoTTSController:
         self.use_roxanne = rospy.get_param('use_roxanne', True)
 
 
-    def motion(self, motion_name, timeout = rospy.Duration(30)):
+    def motion(self, motion_name, timeout = rospy.Duration.from_sec(100.0)):
         goal = PlayMotionGoal()
         goal.motion_name = motion_name
 
@@ -47,7 +47,7 @@ class TiagoTTSController:
 
             self.send_timer_request(execution)
 
-            if execution.token.predicate == 'Playing' and len(execution.token.parameters) == 1:
+            if execution.token.predicate == '_Playing' and len(execution.token.parameters) == 1:
 
                 result = self.motion(str(execution.token.parameters[0]))
                 
