@@ -1,0 +1,30 @@
+PROBLEM tiago_roxanne_problem (DOMAIN tiago_roxanne)
+{
+	// initial robot state
+	f0 <fact> base.positions.At(?loc0) AT [0, 0] [1, +INF] [1, +INF];
+	f1 <fact> head.head_goals.Idle() AT [0, 0] [1, +INF] [1, +INF];
+	f2 <fact> torso.torso_goals.Idle() AT [0, 0] [1, +INF] [1, +INF];
+	f3 <fact> play_motion.pm_goals.Idle() AT [0, 0] [1, +INF] [1, +INF];
+	f4 <fact> robot.robot_goals.Idle() AT [0, 0] [1, +INF] [1, +INF];
+	
+	
+	g0 <goal> guest.behavior.Arrive(?g0_location) AT [10, 10] [11, 11] [1, 1];
+	
+	g1 <goal> guest.behavior.Arrive(?g1_location) AT [150, 150] [151, 151] [1, 1];
+	
+	g2 <goal> guest.behavior.Leave(?g2_location) AT [300, 300] [301, 301] [1, 1];
+	
+	g3 <goal> guest.behavior.Arrive(?g3_location) AT [450, 450] [451, 451] [1, 1];
+	
+	g4 <goal> guest.behavior.Leave(?g4_location) AT [480, 480] [481, 481] [1, 1];
+	
+	?loc0 = home;
+	
+	?g0_location = table_0;
+	
+	?g1_location = table_1;
+	?g2_location = table_1;
+	
+	?g3_location = table_1;
+	?g4_location = table_0;
+}

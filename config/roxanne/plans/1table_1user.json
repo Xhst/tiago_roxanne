@@ -5,14 +5,8 @@
                 {
                     "component" : "guest",
                     "predicate" : "Arrive",
-                    "parameters" : ["table_1"]
-                },
-
-                {
-                    "component" : "guest",
-                    "predicate" : "Leave",
-                    "parameters" : ["table_1"],
-                    "start" : [150, 5000]
+                    "parameters" : ["table_0"],
+                    "start" : [10, 5000]
                 }
 
             ],
@@ -32,8 +26,20 @@
                 },
 
                 {
-                    "component" : "guest",
-                    "predicate" : "None",
+                    "component" : "head",
+                    "predicate" : "Idle",
+                    "start" : [0, 0]
+                },
+
+                {
+                    "component" : "torso",
+                    "predicate" : "Idle",
+                    "start" : [0, 0]
+                },
+
+                {
+                    "component" : "robot",
+                    "predicate" : "Idle",
                     "start" : [0, 0]
                 }
             ]
