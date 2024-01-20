@@ -57,7 +57,7 @@ DOMAIN tiago_roxanne {
          */
         VALUE At(?location) [1, +INF]
 		MEETS {
-			_MovingTo(?dest_location);
+			_MovingTo(?dest);
 		}
 
         /**
@@ -68,12 +68,11 @@ DOMAIN tiago_roxanne {
          * Adjacent states: At
          * Constraints: end location must be equal to destination.
          */
-		VALUE _MovingTo(?dest_location) [1, 100] // States that starts with '_' are partially controllable.
+		VALUE _MovingTo(?dest) [1, 100] // States that starts with '_' are partially controllable.
 		MEETS {
+		
 			At(?location);
-            
-            // location constraint
-			?location = ?dest_location;
+			?location = ?dest;
 		}
     }
 
@@ -86,7 +85,7 @@ DOMAIN tiago_roxanne {
          * Idle state of head.
          * 
          * Duration: 1 to +INF time units
-         * Adjacente states: Moving
+         * Adjacent states: Moving
          */
         VALUE Idle() [1, +INF]
         MEETS {
@@ -116,7 +115,7 @@ DOMAIN tiago_roxanne {
          * Idle state of torso.
          * 
          * Duration: 1 to +INF time units
-         * Adjacente states: Moving
+         * Adjacent states: Moving
          */
         VALUE Idle() [1, +INF]
         MEETS {
@@ -139,7 +138,7 @@ DOMAIN tiago_roxanne {
     /**
      * Definition of the component PlayMotionController used to reproduce predefined movements 
      */
-    COMP_TYPE SingletonStateVariable PlayMotionController(Idle(), Playing(motion)) {
+    COMP_TYPE SingletonStateVariable PlayMotionController(Idle(), _Playing(motion)) {
 
         /**
          * Idle state.
@@ -149,7 +148,7 @@ DOMAIN tiago_roxanne {
          */
         VALUE Idle() [1, +INF]
         MEETS {
-            Playing(?motion);
+            _Playing(?motion);
         }
 
         /**
@@ -159,32 +158,26 @@ DOMAIN tiago_roxanne {
          * Duration: 5 to 30 time units
          * Adjacent states: Idle
          */
-        VALUE Playing(?motion) [5, 30]
+        VALUE _Playing(?motion) [1, 100]
         MEETS {
             Idle();
         }
     }
 
-    COMP_TYPE SingletonStateVariable Robot(Idle(), Home(), MoveTo(location), Operation(location, motion)) {
+    COMP_TYPE SingletonStateVariable Robot(Idle(), GoTo(location), Operation(location, motion)) {
 
         VALUE Idle() [1, +INF]
         MEETS {
-            MoveTo(?to);
+            GoTo(?to);
             Operation(?location, ?motion);
-            Home();
         }
 
-        VALUE MoveTo(?to) [1, +INF]
+        VALUE GoTo(?to) [1, +INF]
         MEETS {
             Idle();
         }
 
         VALUE Operation(?location, ?motion) [1, +INF]
-        MEETS {
-            Idle();
-        }
-
-        VALUE Home() [1, +INF]
         MEETS {
             Idle();
         }
@@ -198,12 +191,12 @@ DOMAIN tiago_roxanne {
             Leave(?table);
         }
 
-        VALUE Arrive(?table) [1, 1]
+        VALUE Arrive(?table) [1, +INF]
         MEETS {
             None();
         }
 
-        VALUE Leave(?table) [1, 1]
+        VALUE Leave(?table) [1, +INF]
         MEETS {
             None();
         }
@@ -214,74 +207,72 @@ DOMAIN tiago_roxanne {
     COMPONENT base        {FLEXIBLE positions(primitive)}   : BaseController;
     COMPONENT head        {FLEXIBLE head_goals(primitive)}  : HeadController;
     COMPONENT torso       {FLEXIBLE torso_goals(primitive)} : TorsoController;
-    COMPONENT grasp       {FLEXIBLE grasp_goals(primitive)} : GraspController;
     COMPONENT play_motion {FLEXIBLE pm_goals(primitive)}    : PlayMotionController;
     COMPONENT robot       {FLEXIBLE robot_goals(primitive)} : Robot;
     COMPONENT guest       {FLEXIBLE behavior(functional)}   : Guest;
 
 
     SYNCHRONIZE guest.behavior {
+        
         VALUE Arrive(?location) {
-            d1 robot.robot_goals.Operation(?loc, ?mot);
+        
+            d1 <!> robot.robot_goals.Operation(?loc1, ?mot1);
+            d2 <!> robot.robot_goals.Operation(?loc2, ?mot2);
+            
+            d3 robot.robot_goals.GoTo(?home);
+            
+            d1 BEFORE [0, +INF] d2;
+            BEFORE [0, +INF] d3;
 
-            BEFORE [0, +INF] d1;
-
-            ?loc = ?location;
-            ?mot = shake_hands;
+            CONTAINS [0, +INF] [0, +INF] d1;
+            CONTAINS [0, +INF] [0, +INF] d2;
+            
+            ?loc1 = ?location;
+            ?loc2 = ?location;
+            ?mot1 = wave;
+            ?mot2 = shake_hands;
+            ?home = home;
         }
 
         VALUE Leave(?location) {
-            d1 robot.robot_goals.Operation(?loc, ?mot);
+        
+            d1 <!> robot.robot_goals.Operation(?loc, ?mot);
             
-            BEFORE [0, +INF] d1;
-
+            d2 robot.robot_goals.GoTo(?home);
+            
+            MEETS d1;
+            d1 BEFORE [0, +INF] d2;
+            
             ?loc = ?location;
             ?mot = wave;
+            
+            ?home = home;
         }
     }
 
     SYNCHRONIZE robot.robot_goals {
 
-        VALUE Home() {
-            d0 <!> base.positions.At(?l0);
+        VALUE GoTo(?location) {
+        
+		    d0 base.positions.At(?l0);
 
-            CONTAINS [0, +INF] [0, +INF] d0;
-
-            ?l0 = home;
-        }
-
-        VALUE MoveTo(?location) {
-		    d0 <!> base.positions.At(?l0);
-
-            CONTAINS [0, +INF] [0, +INF] d0;
+            MEETS d0;
 
             ?l0 = ?location;
 		}
 
         VALUE Operation(?location, ?motion) {
-            d0 <!> base.positions._MovingTo(?loc);
-            d1 base.positions.At(?loc);
-            d2 play_motion.pm_goals.Playing(?mot);
-            d3 play_motion.pm_goals.Playing(?home_mot);
-            d4 <!> base.positions._MovingTo(?home);
+        
+        	d0 base.positions.At(?loc);
+        
+            d1 <!> play_motion.pm_goals._Playing(?mot);
+            
+            DURING [0, +INF] [0, +INF] d0;
 
-            CONTAINS [0, +INF] [0, +INF] d0;
-            CONTAINS [0, +INF] [0, +INF] d1;
-            CONTAINS [0, +INF] [0, +INF] d2;
-            CONTAINS [0, +INF] [0, +INF] d3;
-
-            d0 BEFORE [0, +INF] d1;
-
-            d2 DURING [0, +INF] [0, +INF] d1;
-            d3 DURING [0, +INF] [0, +INF] d1;
-
-            MEETS d4;
-
+            CONTAINS [0, 0] [0, 0] d1;
+            
             ?loc = ?location;
             ?mot = ?motion;
-
-            ?home_mot = home;
-            ?home = home;
         }
     }
 
