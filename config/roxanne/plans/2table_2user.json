@@ -7,6 +7,13 @@
                     "predicate" : "Arrive",
                     "parameters" : ["table_0"],
                     "start" : [0, 5000]
+                },
+
+                {
+                    "component" : "guest",
+                    "predicate" : "Arrive",
+                    "parameters" : ["table_1"],
+                    "start" : [30, 5000]
                 }
 
             ],
