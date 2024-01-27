@@ -24,7 +24,7 @@ class TimerResult():
     def new_token_execution(self, execution):
         token = execution.token
 
-        rospy.loginfo("Received execution for token with id "+ str(token.id)) +" ("+ token.component + "." + token.predicate +")"
+        rospy.loginfo("Received execution for token with id "+ str(token.id) +" ("+ str(token.component) + "." + str(token.predicate) +")")
         self.pending_tokens[token.id] = rospy.get_time()
 
         if not self.is_working:
@@ -46,13 +46,13 @@ class TimerResult():
 
 
     def log_token(self, token, exec_time):
-        rospy.loginfo("Loggin token "+ str(token.id) +" ("+ token.component + "." + token.predicate +"), exec time: "+ str(exec_time))
+        rospy.loginfo("Loggin token "+ str(token.id) +" ("+ str(token.component) + "." + str(token.predicate) +"), exec time: "+ str(exec_time))
         
         file = open(self.file_path, "a")
 
         file.write("token id: " + str(token.id) + os.linesep)
-        file.write("token component: " + token.component + os.linesep)
-        file.write("token predicate: " + token.predicate + os.linesep)
+        file.write("token component: " + str(token.component) + os.linesep)
+        file.write("token predicate: " + str(token.predicate) + os.linesep)
         file.write("token parameters: " + str(token.parameters) + os.linesep)
         file.write("token execution time: " + str(exec_time) + os.linesep)
         file.write("___________________" + os.linesep)
