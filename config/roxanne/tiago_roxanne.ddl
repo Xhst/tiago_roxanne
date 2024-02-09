@@ -217,20 +217,20 @@ DOMAIN tiago_roxanne {
         VALUE Arrive(?location) {
         
             d1 <!> robot.robot_goals.Operation(?loc1, ?mot1);
-            d2 <!> robot.robot_goals.Operation(?loc2, ?mot2);
+            //d2 <!> robot.robot_goals.Operation(?loc2, ?mot2);
             
             d3 robot.robot_goals.GoTo(?home);
             
-            d1 BEFORE [0, +INF] d2;
+            //d1 BEFORE [0, +INF] d2;
             BEFORE [0, +INF] d3;
 
             CONTAINS [0, +INF] [0, +INF] d1;
-            CONTAINS [0, +INF] [0, +INF] d2;
+            //CONTAINS [0, +INF] [0, +INF] d2;
             
             ?loc1 = ?location;
-            ?loc2 = ?location;
+            //?loc2 = ?location;
             ?mot1 = wave;
-            ?mot2 = shake_hands;
+            //?mot2 = shake_hands;
             ?home = home;
         }
 
