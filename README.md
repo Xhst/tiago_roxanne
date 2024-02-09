@@ -1,6 +1,6 @@
 # TIAGo ROXANNE
 
-CNR (National Research Council of Italy) internship project on **time planning** using **ROS** (rospy) and the **TIAGo robot** on the **Gazebo simulator**.
+CNR (National Research Council of Italy) internship project on **timeline-based planning**, using **ROS** (rospy) and the **TIAGo robot** on the **Gazebo simulator**.
 
 ## Installation
 
